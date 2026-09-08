@@ -17,8 +17,8 @@ export default function ChatThread({ messages, onAsk, asking, hasReadyDocuments 
   }
 
   return (
-    <div className="flex flex-col h-screen flex-1">
-      <div className="flex-1 overflow-y-auto px-8 py-8 space-y-6">
+    <div className="flex flex-col h-full min-h-0 flex-1">
+      <div className="flex-1 overflow-y-auto px-8 py-8 space-y-6 min-h-0">
         {messages.length === 0 && (
           <div className="h-full flex items-center justify-center">
             <div className="text-center max-w-sm">

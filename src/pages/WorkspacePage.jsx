@@ -162,7 +162,7 @@ export default function WorkspacePage() {
   const hasReadyDocuments = documents.some((d) => d.status === "ready");
 
   return (
-    <div className="flex">
+    <div className="flex h-screen overflow-hidden">
       <Sidebar
         documents={documents}
         onUpload={handleUpload}
@@ -174,14 +174,14 @@ export default function WorkspacePage() {
         onSelectConversation={handleSelectConversation}
         onNewConversation={handleNewConversation}
       />
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col h-full min-h-0">
         {uploadError && (
-          <p className="px-8 py-2 text-xs text-rust bg-rust/5 border-b border-stone-line">
+          <p className="px-8 py-2 text-xs text-rust bg-rust/5 border-b border-stone-line shrink-0">
             {uploadError}
           </p>
         )}
         {askError && (
-          <p className="px-8 py-2 text-xs text-rust bg-rust/5 border-b border-stone-line">
+          <p className="px-8 py-2 text-xs text-rust bg-rust/5 border-b border-stone-line shrink-0">
             {askError}
           </p>
         )}
