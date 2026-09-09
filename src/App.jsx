@@ -3,6 +3,7 @@ import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AuthPage from "./pages/AuthPage";
 import WorkspacePage from "./pages/WorkspacePage";
+import ResetPasswordPage from "./pages/ResetPassword";
 
 export default function App() {
   return (
@@ -10,6 +11,7 @@ export default function App() {
       <AuthProvider>
         <Routes>
           <Route path="/auth" element={<AuthPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage/>}></Route>
           <Route
             path="/"
             element={
