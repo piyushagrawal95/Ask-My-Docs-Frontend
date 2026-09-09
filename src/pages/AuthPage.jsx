@@ -14,22 +14,39 @@ export default function AuthPage() {
   const [resetSent, setResetSent] = useState(false);
   const navigate = useNavigate();
 
-  // Handle the redirect back from Google (Supabase sends ?code=... here
-  // because our client has detectSessionInUrl: false, so we exchange it
-  // for a session manually).
+  // Handle the redirect back from Google. Supabase may send either
+  // ?code=... (PKCE flow) or #access_token=...&refresh_token=... (implicit
+  // flow, which is what this project uses) — we handle both.
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
-    if (!code) return;
 
-    supabase.auth.exchangeCodeForSession(window.location.href).then(({ error: exchangeError }) => {
-      window.history.replaceState(null, "", window.location.pathname);
-      if (!exchangeError) {
-        navigate("/");
-      } else {
-        setError(exchangeError.message);
-      }
-    });
+    const hash = window.location.hash.startsWith("#")
+      ? window.location.hash.slice(1)
+      : window.location.hash;
+    const hashParams = new URLSearchParams(hash);
+    const access_token = hashParams.get("access_token");
+    const refresh_token = hashParams.get("refresh_token");
+
+    if (code) {
+      supabase.auth.exchangeCodeForSession(window.location.href).then(({ error: exchangeError }) => {
+        window.history.replaceState(null, "", window.location.pathname);
+        if (!exchangeError) {
+          navigate("/");
+        } else {
+          setError(exchangeError.message);
+        }
+      });
+    } else if (access_token && refresh_token) {
+      supabase.auth.setSession({ access_token, refresh_token }).then(({ error: sessionError }) => {
+        window.history.replaceState(null, "", window.location.pathname);
+        if (!sessionError) {
+          navigate("/");
+        } else {
+          setError(sessionError.message);
+        }
+      });
+    }
   }, [navigate]);
 
   async function handleSubmit(e) {
