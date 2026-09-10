@@ -45,15 +45,25 @@ export default function WorkspacePage() {
     return () => clearInterval(interval);
   }, [documents, loadDocuments]);
 
-  async function handleUpload(file) {
+  async function handleUpload(file){
     setUploading(true);
     setUploadError("");
-    try {
-      await api.uploadDocument(file);
-      await loadDocuments();
-    } catch (err) {
+    try{
+      let conversationId=activeConversationId;
+      if(!conversationId){
+        const conv=await api.createConversation();
+        setConversations((prev)=>[conv,...prev]);
+        conversationId=conv.id;
+        setActiveConversationId(conversationId);
+      }
+      await api.uploadDocument(file,conversationId);
+      await loadDocuments(conversationId);
+
+    }
+    catch(err){
       setUploadError(err.message);
-    } finally {
+    }
+    finally{
       setUploading(false);
     }
   }
