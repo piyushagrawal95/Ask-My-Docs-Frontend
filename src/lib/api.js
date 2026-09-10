@@ -26,16 +26,20 @@ async function handleResponse(res) {
 }
 
 export const api = {
-  async listDocuments() {
+  async listDocuments(conversationId) {
     const headers = await getAuthHeaders();
-    const res = await fetch(`${API_BASE_URL}/documents`, { headers });
+    const res = await fetch(
+      `${API_BASE_URL}/documents?conversation_id=${encodeURIComponent(conversationId)}`,
+      { headers }
+    );
     return handleResponse(res);
   },
 
-  async uploadDocument(file) {
+  async uploadDocument(file, conversationId) {
     const headers = await getAuthHeaders();
     const formData = new FormData();
     formData.append("file", file);
+    formData.append("conversation_id", conversationId);
     const res = await fetch(`${API_BASE_URL}/documents`, {
       method: "POST",
       headers,
@@ -99,12 +103,12 @@ export const api = {
     return handleResponse(res);
   },
 
-  async askQuestion(conversationId, question, documentIds) {
+  async askQuestion(conversationId, question) {
     const headers = await getAuthHeaders();
     const res = await fetch(`${API_BASE_URL}/conversations/${conversationId}/messages`, {
       method: "POST",
       headers: { ...headers, "Content-Type": "application/json" },
-      body: JSON.stringify({ question, document_ids: documentIds ?? null }),
+      body: JSON.stringify({ question }),
     });
     return handleResponse(res);
   },
