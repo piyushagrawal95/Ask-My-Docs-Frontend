@@ -38,7 +38,7 @@ export default function ChatThread({ messages, onAsk, asking, hasReadyDocuments 
 
         {asking && (
           <div className="flex justify-start">
-            <div className="inline-block px-4 py-3 text-sm bg-stone-card border border-stone-line text-ink-soft italic">
+            <div className="inline-block px-4 py-3 text-sm rounded-2xl bg-stone-card border border-stone-line text-ink-soft italic">
               Thinking…
             </div>
           </div>
@@ -52,12 +52,12 @@ export default function ChatThread({ messages, onAsk, asking, hasReadyDocuments 
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
             placeholder="Ask a question about your documents…"
-            className="flex-1 border border-stone-line bg-stone-card px-4 py-2.5 text-sm text-ink focus:border-brass outline-none"
+            className="flex-1 rounded-full border border-stone-line bg-white px-4 py-2.5 text-sm text-ink focus:border-brass focus:ring-2 focus:ring-brass-soft outline-none transition-shadow"
           />
           <button
             type="submit"
             disabled={asking || !question.trim()}
-            className="bg-ink text-stone-bg px-5 py-2.5 text-sm font-medium hover:bg-ink-soft transition-colors disabled:opacity-40"
+            className="rounded-full bg-brass text-white px-6 py-2.5 text-sm font-medium shadow-sm hover:bg-brass-dark active:scale-[0.98] transition-all disabled:opacity-40"
           >
             Ask
           </button>

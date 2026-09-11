@@ -8,6 +8,27 @@ async function getAuthHeaders() {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
+async function fetchWithTimeOut(url,options={},timeoutMs=45000){
+  const controller=new AbortController();
+  const timer=setTimeout(()=>controller.abort(),timeoutMs);
+  try{
+    return await fetch(url,{...options,signal:controller.signal});
+
+  }
+  catch(err){
+    if(err.name=="AbortError"){
+      const timeoutError=new Error("The request took too long.Please try again");
+      timeoutError.status=408;
+      throw timeoutError;
+    }
+    throw err;
+  }
+  finally{
+    clearTimeout(timer);
+  }
+}
+
+
 async function handleResponse(res) {
   if (!res.ok) {
     let detail = "Something went wrong.";
@@ -105,7 +126,7 @@ export const api = {
 
   async askQuestion(conversationId, question) {
     const headers = await getAuthHeaders();
-    const res = await fetch(`${API_BASE_URL}/conversations/${conversationId}/messages`, {
+    const res = await fetchWithTimeOut (`${API_BASE_URL}/conversations/${conversationId}/messages`, {
       method: "POST",
       headers: { ...headers, "Content-Type": "application/json" },
       body: JSON.stringify({ question }),

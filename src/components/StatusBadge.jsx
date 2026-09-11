@@ -1,8 +1,8 @@
 const STYLES = {
-  pending: "text-ink-soft",
-  processing: "text-brass",
-  ready: "text-sage",
-  failed: "text-rust",
+  pending: "bg-ink-soft/10 text-ink-soft",
+  processing: "bg-brass-soft text-brass-dark",
+  ready: "bg-sage/10 text-sage",
+  failed: "bg-rust/10 text-rust",
 };
 
 const LABELS = {
@@ -14,7 +14,7 @@ const LABELS = {
 
 export default function StatusBadge({ status }) {
   return (
-    <span className={`text-xs ${STYLES[status] || "text-ink-soft"}`}>
+    <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${STYLES[status] || "bg-ink-soft/10 text-ink-soft"}`}>
       {LABELS[status] || status}
     </span>
   );

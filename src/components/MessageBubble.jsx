@@ -2,9 +2,6 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 
-// Turns [n] citation markers into <sup class="citation-marker">n</sup> HTML,
-// so ReactMarkdown (with rehypeRaw) renders them as small superscript numbers
-// alongside normal markdown formatting (bold, bullets, paragraphs).
 function withCitationMarkers(content) {
   return content.replace(/\[(\d+)\]/g, '<sup class="citation-marker">$1</sup>');
 }
@@ -16,12 +13,12 @@ export default function MessageBubble({ message }) {
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
       <div className={`max-w-prose ${isUser ? "text-right" : ""}`}>
         <div
-          className={`inline-block px-4 py-3 text-sm leading-relaxed text-left ${
+          className={`inline-block px-4 py-3 text-sm leading-relaxed text-left rounded-2xl shadow-sm ${
             isUser
-              ? "bg-ink text-stone-bg"
+              ? "bg-brass text-white rounded-br-md"
               : message.is_answerable === false
-              ? "bg-stone-card border border-stone-line text-ink-soft italic"
-              : "bg-stone-card border border-stone-line text-ink"
+              ? "bg-stone-card border border-stone-line text-ink-soft italic rounded-bl-md"
+              : "bg-white border border-stone-line text-ink rounded-bl-md"
           }`}
         >
           {isUser ? (
@@ -42,7 +39,7 @@ export default function MessageBubble({ message }) {
           <div className="mt-2 space-y-1 text-left">
             {message.citations.map((c, i) => (
               <p key={c.id || i} className="text-xs text-ink-soft border-l-2 border-brass-soft pl-2">
-                <span className="text-brass-dark font-medium">[{i + 1}]</span>{" "}
+                <span className="text-brass font-medium">[{i + 1}]</span>{" "}
                 {c.page_number ? `Page ${c.page_number} — ` : ""}
                 {c.snippet}
               </p>

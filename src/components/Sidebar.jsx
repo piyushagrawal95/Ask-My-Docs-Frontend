@@ -42,10 +42,10 @@ export default function Sidebar({
             handleFiles(e.dataTransfer.files);
           }}
           onClick={() => fileInputRef.current?.click()}
-          className={`cursor-pointer rounded-lg border-2 border-dashed px-3 py-5 text-center transition-colors ${
+          className={`cursor-pointer rounded-xl border-2 border-dashed px-3 py-5 text-center transition-all ${
             dragOver
-              ? "border-brass bg-brass-soft/30"
-              : "border-stone-line hover:border-brass/60 hover:bg-brass-soft/10"
+              ? "border-brass bg-brass-soft/40 scale-[1.01]"
+              : "border-stone-line hover:border-brass/60 hover:bg-brass-soft/20"
           }`}
         >
           <svg
@@ -54,7 +54,7 @@ export default function Sidebar({
             fill="none"
             stroke="currentColor"
             strokeWidth={1.5}
-            className="w-6 h-6 mx-auto mb-1.5 text-brass-dark"
+            className="w-6 h-6 mx-auto mb-1.5 text-brass"
           >
             <path
               strokeLinecap="round"
@@ -78,13 +78,16 @@ export default function Sidebar({
 
       {/* Document list */}
       <div className="px-5 py-4 border-b border-stone-line overflow-y-auto max-h-56 shrink-0">
-        <p className="text-[11px] text-ink-soft mb-2">Documents</p>
+        <p className="text-[11px] font-medium text-ink-soft mb-2 uppercase tracking-wide">Documents</p>
         {documents.length === 0 && (
           <p className="text-xs text-ink-soft/70">No documents uploaded yet.</p>
         )}
-        <ul className="space-y-2">
+        <ul className="space-y-1.5">
           {documents.map((doc) => (
-            <li key={doc.id} className="flex items-center justify-between gap-2">
+            <li
+              key={doc.id}
+              className="flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 hover:bg-stone-bg transition-colors"
+            >
               <span
                 className="text-sm text-ink truncate"
                 title={doc.status === "failed" ? doc.error_message : doc.file_name}
@@ -96,14 +99,14 @@ export default function Sidebar({
                 {doc.status === "failed" && (
                   <button
                     onClick={() => onRetry(doc.id)}
-                    className="text-xs text-brass-dark hover:text-brass transition-colors"
+                    className="text-xs text-brass hover:text-brass-dark transition-colors"
                   >
                     Retry
                   </button>
                 )}
                 <button
                   onClick={() => onDelete(doc.id)}
-                  className="text-xs text-ink-soft hover:text-rust transition-colors"
+                  className="w-5 h-5 flex items-center justify-center rounded-full text-ink-soft hover:bg-rust/10 hover:text-rust transition-colors"
                 >
                   ✕
                 </button>
@@ -116,10 +119,10 @@ export default function Sidebar({
       {/* Conversations */}
       <div className="px-5 py-4 flex-1 overflow-y-auto min-h-0">
         <div className="flex items-center justify-between mb-2">
-          <p className="text-[11px] text-ink-soft">Conversations</p>
+          <p className="text-[11px] font-medium text-ink-soft uppercase tracking-wide">Conversations</p>
           <button
             onClick={onNewConversation}
-            className="text-xs text-brass-dark hover:text-brass transition-colors"
+            className="text-xs font-medium text-brass hover:text-brass-dark transition-colors"
           >
             + New
           </button>
@@ -129,9 +132,9 @@ export default function Sidebar({
             <li key={c.id} className="group flex items-center gap-1">
               <button
                 onClick={() => onSelectConversation(c.id)}
-                className={`flex-1 min-w-0 text-left text-sm truncate px-2 py-1.5 transition-colors  ${
+                className={`flex-1 min-w-0 text-left text-sm truncate px-3 py-2 rounded-lg transition-colors ${
                   c.id === activeConversationId
-                    ? "bg-brass-soft/50 text-ink"
+                    ? "bg-brass-soft text-brass-dark font-medium"
                     : "text-ink-soft hover:bg-stone-bg"
                 }`}
               >

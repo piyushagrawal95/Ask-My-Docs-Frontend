@@ -170,7 +170,15 @@ export default function WorkspacePage() {
         loadConversations();
       }
     } catch (err) {
-      setAskError(err.message);
+      [...prev,{
+        id:`local-error-${Date.now()}`,
+        role:"assistant",
+        content:"Something went wrong sending your question.Please try again.",
+        citations:[],
+        is_answerable:false
+
+      }];
+      setAskError(err.message)
     } finally {
       setAsking(false);
     }

@@ -9,12 +9,12 @@
 }
 
 body {
-  background-color: #EDEAE3;
-  color: #1C2541;
+  background-color: #F7F8FA;
+  color: #12151C;
 }
 
 :focus-visible {
-  outline: 2px solid #B08D57;
+  outline: 2px solid #345D!;
   outline-offset: 2px;
 }
 

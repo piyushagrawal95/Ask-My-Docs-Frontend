@@ -5,21 +5,21 @@ export default {
     extend: {
       colors: {
         stone: {
-          bg: "#EDEAE3",
-          card: "#F5F3EE",
-          line: "#D9D4C7",
+          bg: "#F7F8FA",
+          card: "#FFFFFF",
+          line: "#E4E7EC",
         },
         ink: {
-          DEFAULT: "#1C2541",
-          soft: "#4A5270",
+          DEFAULT: "#12151C",
+          soft: "#5B6472",
         },
         brass: {
-          DEFAULT: "#B08D57",
-          dark: "#8E7043",
-          soft: "#E4D9C3",
+          DEFAULT: "#3454D1",
+          dark: "#28409E",
+          soft: "#DCE4FA",
         },
-        sage: "#6B8F71",
-        rust: "#B1502F",
+        sage: "#1E9E6B",
+        rust: "#DC4C4C",
       },
       fontFamily: {
         serif: ["'Source Serif 4'", "Georgia", "serif"],
@@ -27,6 +27,9 @@ export default {
       },
       maxWidth: {
         prose: "70ch",
+      },
+      borderRadius: {
+        DEFAULT: "8px",x
       },
     },
   },
