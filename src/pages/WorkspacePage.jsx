@@ -198,6 +198,7 @@ export default function WorkspacePage() {
         activeConversationId={activeConversationId}
         onSelectConversation={handleSelectConversation}
         onNewConversation={handleNewConversation}
+        onDeleteConversation={handleDeleteConversation}
       />
       <div className="flex-1 flex flex-col h-full min-h-0">
         {uploadError && (

@@ -128,21 +128,33 @@ export default function Sidebar({
           </button>
         </div>
         <ul className="space-y-1">
-          {conversations.map((c) => (
-            <li key={c.id} className="group flex items-center gap-1">
-              <button
-                onClick={() => onSelectConversation(c.id)}
-                className={`flex-1 min-w-0 text-left text-sm truncate px-3 py-2 rounded-lg transition-colors ${
-                  c.id === activeConversationId
-                    ? "bg-brass-soft text-brass-dark font-medium"
-                    : "text-ink-soft hover:bg-stone-bg"
-                }`}
-              >
-                {c.title || "Untitled conversation"}
-              </button>
-            </li>
-          ))}
-        </ul>
+  {conversations.map((c) => (
+    <li key={c.id} className="group flex items-center gap-1">
+      <button
+        onClick={() => onSelectConversation(c.id)}
+        className={`flex-1 min-w-0 text-left text-sm truncate px-3 py-2 rounded-lg transition-colors ${
+          c.id === activeConversationId
+            ? "bg-brass-soft text-brass-dark font-medium"
+            : "text-ink-soft hover:bg-stone-bg"
+        }`}
+      >
+        {c.title || "Untitled conversation"}
+      </button>
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          if (window.confirm("Delete this conversation and all its documents? This cannot be undone.")) {
+            onDeleteConversation(c.id);
+          }
+        }}
+        className="shrink-0 w-6 h-6 flex items-center justify-center rounded-full text-ink-soft opacity-0 group-hover:opacity-100 hover:bg-rust/10 hover:text-rust transition-all"
+        aria-label="Delete conversation"
+      >
+        ✕
+      </button>
+    </li>
+  ))}
+</ul>
       </div>
 
       {/* User footer */}
