@@ -29,7 +29,7 @@ export default {
         prose: "70ch",
       },
       borderRadius: {
-        DEFAULT: "8px",x
+        DEFAULT: "8px",
       },
     },
   },
