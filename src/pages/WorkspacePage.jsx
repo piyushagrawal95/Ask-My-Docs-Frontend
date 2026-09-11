@@ -14,14 +14,21 @@ export default function WorkspacePage() {
   const [asking, setAsking] = useState(false);
   const [askError, setAskError] = useState("");
 
-  const loadDocuments = useCallback(async () => {
-    try {
-      const res = await api.listDocuments();
-      setDocuments(res.documents);
-    } catch {
-      // silently ignore transient failures; next poll will retry
+  const loadDocuments=useCallback(async()=>{
+    if(!activeConversationId){
+      setDocuments([]);
+      return;
     }
-  }, []);
+    try{
+      const res=await api.listDocuments(activeConversationId);
+      setDocuments(res.documents);
+
+    }
+    catch{
+
+    }
+
+  },[activeConversationId])
 
   const loadConversations = useCallback(async () => {
     try {
@@ -57,7 +64,7 @@ export default function WorkspacePage() {
         setActiveConversationId(conversationId);
       }
       await api.uploadDocument(file,conversationId);
-      await loadDocuments(conversationId);
+      await loadDocuments();
 
     }
     catch(err){
