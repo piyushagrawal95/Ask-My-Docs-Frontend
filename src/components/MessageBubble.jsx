@@ -1,17 +1,12 @@
-function renderWithMarkers(content) {
-  // Splits on [n] citation markers and renders them as small superscript footnote numbers.
-  const parts = content.split(/(\[\d+\])/g);
-  return parts.map((part, i) => {
-    const match = part.match(/^\[(\d+)\]$/);
-    if (match) {
-      return (
-        <sup key={i} className="text-brass-dark font-medium mx-0.5">
-          {match[1]}
-        </sup>
-      );
-    }
-    return <span key={i}>{part}</span>;
-  });
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
+
+// Turns [n] citation markers into <sup class="citation-marker">n</sup> HTML,
+// so ReactMarkdown (with rehypeRaw) renders them as small superscript numbers
+// alongside normal markdown formatting (bold, bullets, paragraphs).
+function withCitationMarkers(content) {
+  return content.replace(/\[(\d+)\]/g, '<sup class="citation-marker">$1</sup>');
 }
 
 export default function MessageBubble({ message }) {
@@ -21,7 +16,7 @@ export default function MessageBubble({ message }) {
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
       <div className={`max-w-prose ${isUser ? "text-right" : ""}`}>
         <div
-          className={`inline-block px-4 py-3 text-sm leading-relaxed ${
+          className={`inline-block px-4 py-3 text-sm leading-relaxed text-left ${
             isUser
               ? "bg-ink text-stone-bg"
               : message.is_answerable === false
@@ -29,7 +24,18 @@ export default function MessageBubble({ message }) {
               : "bg-stone-card border border-stone-line text-ink"
           }`}
         >
-          {isUser ? message.content : renderWithMarkers(message.content)}
+          {isUser ? (
+            message.content
+          ) : (
+            <div className="markdown-answer">
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeRaw]}
+              >
+                {withCitationMarkers(message.content)}
+              </ReactMarkdown>
+            </div>
+          )}
         </div>
 
         {!isUser && message.citations && message.citations.length > 0 && (

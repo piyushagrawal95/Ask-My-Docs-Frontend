@@ -25,3 +25,29 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+.markdown-answer p {
+  margin-bottom: 0.6rem;
+}
+.markdown-answer p:last-child {
+  margin-bottom: 0;
+}
+.markdown-answer ul,
+.markdown-answer ol {
+  margin: 0.4rem 0 0.6rem 1.1rem;
+}
+.markdown-answer ul {
+  list-style: disc;
+}
+.markdown-answer ol {
+  list-style: decimal;
+}
+.markdown-answer strong {
+  font-weight: 600;
+}
+.citation-marker {
+  color: #8E7043;
+  font-weight: 500;
+  margin-left: 1px;
+  margin-right: 1px;
+}
