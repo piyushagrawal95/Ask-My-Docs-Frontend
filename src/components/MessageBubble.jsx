@@ -1,9 +1,10 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import rehypeRaw from "rehype-raw";
 
-function withCitationMarkers(content) {
-  return content.replace(/\[(\d+)\]/g, '<sup class="citation-marker">$1</sup>');
+// Strip [n] citation markers from the displayed text — citations are kept
+// in the database (via message.citations) but not shown in the UI.
+function stripCitationMarkers(content) {
+  return content.replace(/\[(\d+)\]/g, "");
 }
 
 export default function MessageBubble({ message }) {
@@ -25,27 +26,12 @@ export default function MessageBubble({ message }) {
             message.content
           ) : (
             <div className="markdown-answer">
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                rehypePlugins={[rehypeRaw]}
-              >
-                {withCitationMarkers(message.content)}
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {stripCitationMarkers(message.content)}
               </ReactMarkdown>
             </div>
           )}
         </div>
-
-        {!isUser && message.citations && message.citations.length > 0 && (
-          <div className="mt-2 space-y-1 text-left">
-            {message.citations.map((c, i) => (
-              <p key={c.id || i} className="text-xs text-ink-soft border-l-2 border-brass-soft pl-2">
-                <span className="text-brass font-medium">[{i + 1}]</span>{" "}
-                {c.page_number ? `Page ${c.page_number} — ` : ""}
-                {c.snippet}
-              </p>
-            ))}
-          </div>
-        )}
       </div>
     </div>
   );
