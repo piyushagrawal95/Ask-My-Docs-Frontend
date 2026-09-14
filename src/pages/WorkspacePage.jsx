@@ -1,4 +1,4 @@
-import { act, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import ChatThread from "../components/ChatThread";
 import { api } from "../lib/api";
@@ -127,7 +127,7 @@ export default function WorkspacePage() {
     try{
       await api.deleteConversation(id);
       setConversations((prev)=>prev.filter((c)=>c.id!==id));
-      if(id==activeConversationId){
+      if(id===activeConversationId){
         setActiveConversationId(null);
         setMessages([]);
       }
@@ -140,7 +140,6 @@ export default function WorkspacePage() {
   async function handleAsk(question) {
     let conversationId = activeConversationId;
     const isFirstMessage=messages.length===0;
-    
 
     // No conversation selected yet — create one on the fly.
     if (!conversationId) {
@@ -170,15 +169,17 @@ export default function WorkspacePage() {
         loadConversations();
       }
     } catch (err) {
-      [...prev,{
-        id:`local-error-${Date.now()}`,
-        role:"assistant",
-        content:"Something went wrong sending your question.Please try again.",
-        citations:[],
-        is_answerable:false
-
-      }];
-      setAskError(err.message)
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `local-error-${Date.now()}`,
+          role: "assistant",
+          content: "Something went wrong sending your question. Please try again.",
+          citations: [],
+          is_answerable: false,
+        },
+      ]);
+      setAskError(err.message);
     } finally {
       setAsking(false);
     }

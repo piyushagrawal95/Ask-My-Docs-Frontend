@@ -127,6 +127,9 @@ export default function AuthPage() {
       provider: "google",
       options: {
         redirectTo: `${window.location.origin}/auth`,
+        queryParams:{
+          prompt:"select_account"
+        }
       },
     });
   }
