@@ -7,6 +7,7 @@ export default function WorkspacePage() {
   const [documents, setDocuments] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState("");
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const [conversations, setConversations] = useState([]);
   const [activeConversationId, setActiveConversationId] = useState(null);
@@ -14,21 +15,18 @@ export default function WorkspacePage() {
   const [asking, setAsking] = useState(false);
   const [askError, setAskError] = useState("");
 
-  const loadDocuments=useCallback(async()=>{
-    if(!activeConversationId){
+  const loadDocuments = useCallback(async () => {
+    if (!activeConversationId) {
       setDocuments([]);
       return;
     }
-    try{
-      const res=await api.listDocuments(activeConversationId);
+    try {
+      const res = await api.listDocuments(activeConversationId);
       setDocuments(res.documents);
-
+    } catch {
+      // ignore
     }
-    catch{
-
-    }
-
-  },[activeConversationId])
+  }, [activeConversationId]);
 
   const loadConversations = useCallback(async () => {
     try {
@@ -52,36 +50,33 @@ export default function WorkspacePage() {
     return () => clearInterval(interval);
   }, [documents, loadDocuments]);
 
-  async function handleUpload(file){
+  async function handleUpload(file) {
     setUploading(true);
     setUploadError("");
-    try{
-      let conversationId=activeConversationId;
-      if(!conversationId){
-        const conv=await api.createConversation();
-        setConversations((prev)=>[conv,...prev]);
-        conversationId=conv.id;
+    try {
+      let conversationId = activeConversationId;
+      if (!conversationId) {
+        const conv = await api.createConversation();
+        setConversations((prev) => [conv, ...prev]);
+        conversationId = conv.id;
         setActiveConversationId(conversationId);
       }
-      await api.uploadDocument(file,conversationId);
+      await api.uploadDocument(file, conversationId);
       await loadDocuments();
-
-    }
-    catch(err){
+    } catch (err) {
       setUploadError(err.message);
-    }
-    finally{
+    } finally {
       setUploading(false);
     }
   }
 
-  useEffect(()=>{
-    if(!uploadError){
+  useEffect(() => {
+    if (!uploadError) {
       return;
     }
-    const timer=setTimeout(()=>setUploadError(""),5000);
-    return ()=> clearTimeout(timer);
-  },[uploadError])
+    const timer = setTimeout(() => setUploadError(""), 5000);
+    return () => clearTimeout(timer);
+  }, [uploadError]);
 
   async function handleDelete(id) {
     try {
@@ -123,23 +118,22 @@ export default function WorkspacePage() {
     }
   }
 
-  async function handleDeleteConversation(id){
-    try{
+  async function handleDeleteConversation(id) {
+    try {
       await api.deleteConversation(id);
-      setConversations((prev)=>prev.filter((c)=>c.id!==id));
-      if(id===activeConversationId){
+      setConversations((prev) => prev.filter((c) => c.id !== id));
+      if (id === activeConversationId) {
         setActiveConversationId(null);
         setMessages([]);
       }
-    }
-    catch(err){
+    } catch (err) {
       setAskError(err.message);
     }
   }
 
   async function handleAsk(question) {
     let conversationId = activeConversationId;
-    const isFirstMessage=messages.length===0;
+    const isFirstMessage = messages.length === 0;
 
     // No conversation selected yet — create one on the fly.
     if (!conversationId) {
@@ -165,7 +159,7 @@ export default function WorkspacePage() {
     try {
       const assistantMessage = await api.askQuestion(conversationId, question);
       setMessages((prev) => [...prev, assistantMessage]);
-      if(isFirstMessage){
+      if (isFirstMessage) {
         loadConversations();
       }
     } catch (err) {
@@ -189,35 +183,64 @@ export default function WorkspacePage() {
 
   return (
     <div className="flex h-screen overflow-hidden">
-      <Sidebar
-        documents={documents}
-        onUpload={handleUpload}
-        uploading={uploading}
-        onDelete={handleDelete}
-        onRetry={handleRetry}
-        conversations={conversations}
-        activeConversationId={activeConversationId}
-        onSelectConversation={handleSelectConversation}
-        onNewConversation={handleNewConversation}
-        onDeleteConversation={handleDeleteConversation}
-      />
-      <div className="flex-1 flex flex-col h-full min-h-0">
-        {uploadError && (
-          <p className="px-8 py-2 text-xs text-rust bg-rust/5 border-b border-stone-line shrink-0">
-            {uploadError}
-          </p>
-        )}
-        {askError && (
-          <p className="px-8 py-2 text-xs text-rust bg-rust/5 border-b border-stone-line shrink-0">
-            {askError}
-          </p>
-        )}
-        <ChatThread
-          messages={messages}
-          onAsk={handleAsk}
-          asking={asking}
-          hasReadyDocuments={hasReadyDocuments}
+      {sidebarOpen && (
+        <Sidebar
+          documents={documents}
+          onUpload={handleUpload}
+          uploading={uploading}
+          onDelete={handleDelete}
+          onRetry={handleRetry}
+          conversations={conversations}
+          activeConversationId={activeConversationId}
+          onSelectConversation={handleSelectConversation}
+          onNewConversation={handleNewConversation}
+          onDeleteConversation={handleDeleteConversation}
         />
+      )}
+      <div className="flex-1 flex flex-col h-full min-h-0">
+        <div className="flex items-center gap-3 px-4 py-2.5 border-b border-stone-line shrink-0">
+          <button
+            onClick={() => setSidebarOpen((v) => !v)}
+            aria-label={sidebarOpen ? "Close sidebar" : "Open sidebar"}
+            className="w-8 h-8 flex items-center justify-center rounded-lg text-ink-soft hover:bg-stone-bg hover:text-ink transition-colors"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={1.5}
+              className="w-5 h-5"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M3.75 5.25h16.5M3.75 12h16.5M3.75 18.75h16.5"
+              />
+            </svg>
+          </button>
+        </div>
+
+        <div className="flex-1 flex flex-col h-full min-h-0">
+          {uploadError && (
+            <p className="px-8 py-2 text-xs text-rust bg-rust/5 border-b border-stone-line shrink-0">
+              {uploadError}
+            </p>
+          )}
+
+          {askError && (
+            <p className="px-8 py-2 text-xs text-rust bg-rust/5 border-b border-stone-line shrink-0">
+              {askError}
+            </p>
+          )}
+
+          <ChatThread
+            messages={messages}
+            onAsk={handleAsk}
+            asking={asking}
+            hasReadyDocuments={hasReadyDocuments}
+          />
+        </div>
       </div>
     </div>
   );
