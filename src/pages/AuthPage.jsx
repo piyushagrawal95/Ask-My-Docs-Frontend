@@ -19,6 +19,7 @@ export default function AuthPage() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
+    const isEmailConfirmation = params.get("confirmed") === "1";
 
     const hash = window.location.hash.startsWith("#")
       ? window.location.hash.slice(1)
@@ -26,25 +27,29 @@ export default function AuthPage() {
     const hashParams = new URLSearchParams(hash);
     const access_token = hashParams.get("access_token");
     const refresh_token = hashParams.get("refresh_token");
+    const hashType = hashParams.get("type"); // "signup" for email confirmation links
+
+    function finishAuthLanding({ error: sessionError }) {
+      window.history.replaceState(null, "", window.location.pathname);
+      if (sessionError) {
+        setError(sessionError.message);
+        return;
+      }
+      if (isEmailConfirmation || hashType === "signup") {
+        // Link ne sirf email verify kiya hai — user ko signed-in nahi rakhna.
+        supabase.auth.signOut().then(() => {
+          setInfo("Your email is confirmed. Please sign in below.");
+          setMode("signin");
+        });
+        return;
+      }
+      navigate("/");
+    }
 
     if (code) {
-      supabase.auth.exchangeCodeForSession(window.location.href).then(({ error: exchangeError }) => {
-        window.history.replaceState(null, "", window.location.pathname);
-        if (!exchangeError) {
-          navigate("/");
-        } else {
-          setError(exchangeError.message);
-        }
-      });
+      supabase.auth.exchangeCodeForSession(window.location.href).then(finishAuthLanding);
     } else if (access_token && refresh_token) {
-      supabase.auth.setSession({ access_token, refresh_token }).then(({ error: sessionError }) => {
-        window.history.replaceState(null, "", window.location.pathname);
-        if (!sessionError) {
-          navigate("/");
-        } else {
-          setError(sessionError.message);
-        }
-      });
+      supabase.auth.setSession({ access_token, refresh_token }).then(finishAuthLanding);
     }
   }, [navigate]);
 
@@ -82,7 +87,7 @@ export default function AuthPage() {
         password,
         options: {
           data: { full_name: fullName },
-          emailRedirectTo: `${window.location.origin}/auth`,
+          emailRedirectTo: `${window.location.origin}/auth?confirmed=1`,
         },
       });
       setBusy(false);
