@@ -9,12 +9,12 @@
 }
 
 body {
-  background-color: #F7F8FA;
-  color: #12151C;
+  background-color: #F2EFE7;
+  color: #1C1A15;
 }
 
 :focus-visible {
-  outline: 2px solid #3454D1;
+  outline: 2px solid #2F5D50;
   outline-offset: 2px;
 }
 
@@ -26,15 +26,32 @@ body {
   }
 }
 
+/* Thin, quiet scrollbars for the dark shell and the paper thread */
+.scroll-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.scroll-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scroll-thin-shell::-webkit-scrollbar-thumb {
+  background-color: #2C3E63;
+  border-radius: 999px;
+}
+.scroll-thin-paper::-webkit-scrollbar-thumb {
+  background-color: #E2DDCC;
+  border-radius: 999px;
+}
+
 .markdown-answer p {
-  margin-bottom: 0.6rem;
+  margin-bottom: 0.65rem;
 }
 .markdown-answer p:last-child {
   margin-bottom: 0;
 }
 .markdown-answer ul,
 .markdown-answer ol {
-  margin: 0.4rem 0 0.6rem 1.1rem;
+  margin: 0.4rem 0 0.65rem 1.15rem;
 }
 .markdown-answer ul {
   list-style: disc;
@@ -44,10 +61,17 @@ body {
 }
 .markdown-answer strong {
   font-weight: 600;
+  color: #1C1A15;
+}
+.markdown-answer code {
+  background: #EFE9D8;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  font-size: 0.85em;
 }
 .citation-marker {
-  color: #8E7043;
-  font-weight: 500;
+  color: #8F6E34;
+  font-weight: 600;
   margin-left: 1px;
   margin-right: 1px;
 }

@@ -198,11 +198,11 @@ export default function WorkspacePage() {
         />
       )}
       <div className="flex-1 flex flex-col h-full min-h-0">
-        <div className="flex items-center gap-3 px-4 py-2.5 border-b border-stone-line shrink-0">
+        <div className="flex items-center gap-3 px-4 py-2.5 bg-paper border-b border-paper-line shrink-0">
           <button
             onClick={() => setSidebarOpen((v) => !v)}
             aria-label={sidebarOpen ? "Close sidebar" : "Open sidebar"}
-            className="w-8 h-8 flex items-center justify-center rounded-lg text-ink-soft hover:bg-stone-bg hover:text-ink transition-colors"
+            className="w-8 h-8 flex items-center justify-center rounded-lg text-ink-soft hover:bg-paper-card hover:text-ink transition-colors"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -219,17 +219,20 @@ export default function WorkspacePage() {
               />
             </svg>
           </button>
+          <span className="text-[13px] text-ink-soft">
+            {hasReadyDocuments ? "Documents ready — ask away." : "Upload a document to get started."}
+          </span>
         </div>
 
         <div className="flex-1 flex flex-col h-full min-h-0">
           {uploadError && (
-            <p className="px-8 py-2 text-xs text-rust bg-rust/5 border-b border-stone-line shrink-0">
+            <p className="px-8 py-2 text-[13px] text-rust bg-rust/5 border-b border-paper-line shrink-0">
               {uploadError}
             </p>
           )}
 
           {askError && (
-            <p className="px-8 py-2 text-xs text-rust bg-rust/5 border-b border-stone-line shrink-0">
+            <p className="px-8 py-2 text-[13px] text-rust bg-rust/5 border-b border-paper-line shrink-0">
               {askError}
             </p>
           )}

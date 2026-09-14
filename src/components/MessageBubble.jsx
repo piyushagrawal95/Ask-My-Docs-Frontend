@@ -9,17 +9,18 @@ function stripCitationMarkers(content) {
 
 export default function MessageBubble({ message }) {
   const isUser = message.role === "user";
+  const unanswerable = message.is_answerable === false;
 
   return (
-    <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
+    <div className={`flex animate-rise ${isUser ? "justify-end" : "justify-start"}`}>
       <div className={`max-w-prose ${isUser ? "text-right" : ""}`}>
         <div
-          className={`inline-block px-4 py-3 text-sm leading-relaxed text-left rounded-2xl shadow-sm ${
+          className={`inline-block px-4 py-3 text-[14px] leading-relaxed text-left rounded-lg ${
             isUser
-              ? "bg-brass text-white rounded-br-md"
-              : message.is_answerable === false
-              ? "bg-stone-card border border-stone-line text-ink-soft italic rounded-bl-md"
-              : "bg-white border border-stone-line text-ink rounded-bl-md"
+              ? "bg-moss text-white rounded-br-sm"
+              : unanswerable
+              ? "bg-paper-card border border-dashed border-paper-line text-ink-soft italic rounded-bl-sm"
+              : "bg-paper-card border-l-2 border-brass text-ink rounded-bl-sm shadow-sm"
           }`}
         >
           {isUser ? (

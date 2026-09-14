@@ -140,21 +140,39 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6">
-      <div className="w-full max-w-sm">
-        <div className="mb-10 text-center">
-          <p className="font-serif text-3xl text-ink">Ask My Docs</p>
-          <p className="mt-2 text-sm text-ink-soft">
+    <div className="min-h-screen flex">
+      {/* Left panel — the desk. Hidden on small screens. */}
+      <div className="hidden lg:flex w-[42%] shrink-0 bg-shell flex-col justify-between px-14 py-14">
+        <p className="font-serif text-xl text-ink-onshell">Ask My Docs</p>
+        <div>
+          <svg viewBox="0 0 64 64" className="w-12 h-12 mb-6 text-brass" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 14a4 4 0 0 1 4-4h16v40H12a4 4 0 0 1-4-4V14Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+            <path d="M56 14a4 4 0 0 0-4-4H36v40h16a4 4 0 0 0 4-4V14Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+            <path d="M28 14v36M14 18h10M14 24h10M14 30h8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+          </svg>
+          <p className="font-serif text-[34px] leading-[1.2] text-ink-onshell max-w-sm">
             Read your documents by asking them questions.
           </p>
+          <p className="mt-4 text-[14px] text-ink-onshellsoft max-w-xs leading-relaxed">
+            Upload a PDF, DOCX or TXT file and get answers grounded in what it actually says, with citations back to the source.
+          </p>
         </div>
+        <p className="text-[12px] text-ink-onshellsoft">Your files stay in your workspace.</p>
+      </div>
 
-        <div className="rounded-2xl border border-stone-line bg-stone-card p-8 shadow-sm">
-          <div className="mb-6 flex gap-6 border-b border-stone-line text-sm">
+      {/* Right panel — the form */}
+      <div className="flex-1 flex items-center justify-center px-6 py-12 bg-paper">
+        <div className="w-full max-w-sm">
+          <div className="mb-8 text-center lg:hidden">
+            <p className="font-serif text-3xl text-ink">Ask My Docs</p>
+            <p className="mt-2 text-sm text-ink-soft">Read your documents by asking them questions.</p>
+          </div>
+
+          <div className="mb-6 flex gap-6 border-b border-paper-line text-sm">
             <button
               className={`pb-3 -mb-px border-b-2 transition-colors ${
                 mode === "signin"
-                  ? "border-brass text-ink font-medium"
+                  ? "border-moss text-ink font-medium"
                   : "border-transparent text-ink-soft"
               }`}
               onClick={() => {
@@ -168,7 +186,7 @@ export default function AuthPage() {
             <button
               className={`pb-3 -mb-px border-b-2 transition-colors ${
                 mode === "signup"
-                  ? "border-brass text-ink font-medium"
+                  ? "border-moss text-ink font-medium"
                   : "border-transparent text-ink-soft"
               }`}
               onClick={() => {
@@ -184,7 +202,7 @@ export default function AuthPage() {
           <button
             type="button"
             onClick={handleGoogleSignIn}
-            className="w-full flex items-center justify-center gap-2 rounded-lg border border-stone-line bg-white py-2.5 text-sm font-medium text-ink hover:bg-stone-bg hover:border-ink/20 transition-colors mb-4"
+            className="w-full flex items-center justify-center gap-2 rounded-lg border border-paper-line bg-paper-card py-2.5 text-sm font-medium text-ink hover:border-ink/20 transition-colors mb-4"
           >
             <svg width="16" height="16" viewBox="0 0 48 48" aria-hidden="true">
               <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.9 32.5 29.4 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z"/>
@@ -196,9 +214,9 @@ export default function AuthPage() {
           </button>
 
           <div className="flex items-center gap-3 mb-4">
-            <div className="h-px flex-1 bg-stone-line" />
+            <div className="h-px flex-1 bg-paper-line" />
             <span className="text-xs text-ink-soft">or</span>
-            <div className="h-px flex-1 bg-stone-line" />
+            <div className="h-px flex-1 bg-paper-line" />
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -213,7 +231,7 @@ export default function AuthPage() {
                   required
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full rounded-lg border border-stone-line bg-white px-3 py-2.5 text-sm text-ink focus:border-brass focus:ring-2 focus:ring-brass-soft outline-none transition-shadow"
+                  className="w-full rounded-lg border border-paper-line bg-paper-card px-3 py-2.5 text-sm text-ink focus:border-moss focus:ring-2 focus:ring-moss-soft outline-none transition-shadow"
                   placeholder="Jane Doe"
                 />
               </div>
@@ -228,7 +246,7 @@ export default function AuthPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-lg border border-stone-line bg-white px-3 py-2.5 text-sm text-ink focus:border-brass focus:ring-2 focus:ring-brass-soft outline-none transition-shadow"
+                className="w-full rounded-lg border border-paper-line bg-paper-card px-3 py-2.5 text-sm text-ink focus:border-moss focus:ring-2 focus:ring-moss-soft outline-none transition-shadow"
                 placeholder="you@example.com"
               />
             </div>
@@ -245,13 +263,13 @@ export default function AuthPage() {
                     minLength={6}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full rounded-lg border border-stone-line bg-white px-3 py-2.5 pr-10 text-sm text-ink focus:border-brass focus:ring-2 focus:ring-brass-soft outline-none transition-shadow"
+                    className="w-full rounded-lg border border-paper-line bg-paper-card px-3 py-2.5 pr-10 text-sm text-ink focus:border-moss focus:ring-2 focus:ring-moss-soft outline-none transition-shadow"
                     placeholder="••••••••"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword((v) => !v)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-soft hover:text-brass transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-soft hover:text-moss transition-colors"
                     tabIndex={-1}
                     aria-label={showPassword ? "Hide password" : "Show password"}
                   >
@@ -280,7 +298,7 @@ export default function AuthPage() {
                     setInfo("");
                     setResetSent(false);
                   }}
-                  className="text-xs text-ink-soft hover:text-brass transition-colors"
+                  className="text-xs text-ink-soft hover:text-moss transition-colors"
                 >
                   Forgot password?
                 </button>
@@ -288,13 +306,13 @@ export default function AuthPage() {
             )}
 
             {error && <p className="text-sm text-rust">{error}</p>}
-            {info && <p className="text-sm text-sage">{info}</p>}
+            {info && <p className="text-sm text-moss">{info}</p>}
 
             {!showForgot && (
               <button
                 type="submit"
                 disabled={busy}
-                className="w-full rounded-lg bg-brass text-white py-2.5 text-sm font-medium shadow-sm hover:bg-brass-dark active:scale-[0.99] transition-all disabled:opacity-50"
+                className="w-full rounded-lg bg-moss text-white py-2.5 text-sm font-medium shadow-sm hover:bg-moss-dark active:scale-[0.99] transition-all disabled:opacity-50"
               >
                 {busy ? "Please wait…" : mode === "signin" ? "Sign in" : "Create account"}
               </button>
@@ -302,16 +320,16 @@ export default function AuthPage() {
           </form>
 
           {showForgot && (
-            <div className="mt-4 border-t border-stone-line pt-4">
+            <div className="mt-4 border-t border-paper-line pt-4">
               {resetSent ? (
                 <div className="space-y-3">
-                  <p className="text-sm text-sage">
+                  <p className="text-sm text-moss">
                     Reset link sent to <span className="font-medium">{email}</span>. Check your inbox.
                   </p>
                   <button
                     type="button"
                     onClick={() => setShowForgot(false)}
-                    className="text-xs text-ink-soft hover:text-brass transition-colors"
+                    className="text-xs text-ink-soft hover:text-moss transition-colors"
                   >
                     Back to sign in
                   </button>
@@ -325,14 +343,14 @@ export default function AuthPage() {
                     type="button"
                     disabled={busy || !email}
                     onClick={handleForgotPassword}
-                    className="w-full rounded-lg bg-brass text-white py-2.5 text-sm font-medium shadow-sm hover:bg-brass-dark active:scale-[0.99] transition-all disabled:opacity-50"
+                    className="w-full rounded-lg bg-moss text-white py-2.5 text-sm font-medium shadow-sm hover:bg-moss-dark active:scale-[0.99] transition-all disabled:opacity-50"
                   >
                     {busy ? "Sending…" : "Send reset link"}
                   </button>
                   <button
                     type="button"
                     onClick={() => setShowForgot(false)}
-                    className="text-xs text-ink-soft hover:text-brass transition-colors"
+                    className="text-xs text-ink-soft hover:text-moss transition-colors"
                   >
                     Back to sign in
                   </button>

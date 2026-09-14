@@ -1,20 +1,28 @@
-const STYLES = {
-  pending: "bg-ink-soft/10 text-ink-soft",
-  processing: "bg-brass-soft text-brass-dark",
-  ready: "bg-sage/10 text-sage",
-  failed: "bg-rust/10 text-rust",
+const DOT_STYLES = {
+  pending: "bg-ink-onshellsoft",
+  processing: "bg-brass animate-pulse",
+  ready: "bg-moss",
+  failed: "bg-rust",
+};
+
+const TEXT_STYLES = {
+  pending: "text-ink-onshellsoft",
+  processing: "text-brass",
+  ready: "text-moss",
+  failed: "text-rust",
 };
 
 const LABELS = {
   pending: "Queued",
-  processing: "Processing…",
+  processing: "Processing",
   ready: "Ready",
   failed: "Failed",
 };
 
 export default function StatusBadge({ status }) {
   return (
-    <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${STYLES[status] || "bg-ink-soft/10 text-ink-soft"}`}>
+    <span className={`inline-flex items-center gap-1.5 text-[11px] font-medium ${TEXT_STYLES[status] || "text-ink-onshellsoft"}`}>
+      <span className={`w-1.5 h-1.5 rounded-full ${DOT_STYLES[status] || "bg-ink-onshellsoft"}`} />
       {LABELS[status] || status}
     </span>
   );

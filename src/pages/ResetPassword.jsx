@@ -65,21 +65,21 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6">
+    <div className="min-h-screen flex items-center justify-center px-6 bg-paper">
       <div className="w-full max-w-sm">
         <div className="mb-10 text-center">
           <p className="font-serif text-3xl text-ink">Ask My Docs</p>
           <p className="mt-2 text-sm text-ink-soft">Set a new password</p>
         </div>
 
-        <div className="rounded-2xl border border-stone-line bg-stone-card p-8 shadow-sm">
+        <div className="rounded-lg border border-paper-line bg-paper-card p-8 shadow-sm">
           {linkError && (
             <div className="space-y-3 text-center">
               <p className="text-sm text-rust">{linkError}</p>
               <button
                 type="button"
                 onClick={() => navigate("/auth")}
-                className="text-xs text-ink-soft hover:text-brass transition-colors"
+                className="text-xs text-ink-soft hover:text-moss transition-colors"
               >
                 Back to sign in
               </button>
@@ -91,7 +91,7 @@ export default function ResetPasswordPage() {
           )}
 
           {ready && done && (
-            <p className="text-sm text-sage text-center">
+            <p className="text-sm text-moss text-center">
               Password updated. Redirecting you in…
             </p>
           )}
@@ -110,13 +110,13 @@ export default function ResetPasswordPage() {
                     minLength={6}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full rounded-lg border border-stone-line bg-white px-3 py-2.5 pr-10 text-sm text-ink focus:border-brass focus:ring-2 focus:ring-brass-soft outline-none transition-shadow"
+                    className="w-full rounded-lg border border-paper-line bg-paper-card px-3 py-2.5 pr-10 text-sm text-ink focus:border-moss focus:ring-2 focus:ring-moss-soft outline-none transition-shadow"
                     placeholder="••••••••"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword((v) => !v)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-soft hover:text-brass transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-soft hover:text-moss transition-colors"
                     tabIndex={-1}
                     aria-label={showPassword ? "Hide password" : "Show password"}
                   >
@@ -144,7 +144,7 @@ export default function ResetPasswordPage() {
                   minLength={6}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full rounded-lg border border-stone-line bg-white px-3 py-2.5 text-sm text-ink focus:border-brass focus:ring-2 focus:ring-brass-soft outline-none transition-shadow"
+                  className="w-full rounded-lg border border-paper-line bg-paper-card px-3 py-2.5 text-sm text-ink focus:border-moss focus:ring-2 focus:ring-moss-soft outline-none transition-shadow"
                   placeholder="••••••••"
                 />
               </div>
@@ -154,7 +154,7 @@ export default function ResetPasswordPage() {
               <button
                 type="submit"
                 disabled={busy}
-                className="w-full rounded-lg bg-brass text-white py-2.5 text-sm font-medium shadow-sm hover:bg-brass-dark active:scale-[0.99] transition-all disabled:opacity-50"
+                className="w-full rounded-lg bg-moss text-white py-2.5 text-sm font-medium shadow-sm hover:bg-moss-dark active:scale-[0.99] transition-all disabled:opacity-50"
               >
                 {busy ? "Updating…" : "Update password"}
               </button>
