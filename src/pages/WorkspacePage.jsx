@@ -15,14 +15,15 @@ export default function WorkspacePage() {
   const [asking, setAsking] = useState(false);
   const [askError, setAskError] = useState("");
 
-  const loadDocuments = useCallback(async () => {
-    if (!activeConversationId) {
+  const loadDocuments = useCallback(async (convId) => {
+    const id = convId || activeConversationId;
+    if (!id) {
       setDocuments([]);
       return;
     }
     try {
-      const res = await api.listDocuments(activeConversationId);
-      setDocuments(res.documents);
+      const res = await api.listDocuments(id);
+      setDocuments(res.documents || []);
     } catch {
       // ignore
     }
@@ -46,7 +47,7 @@ export default function WorkspacePage() {
   useEffect(() => {
     const hasActive = documents.some((d) => d.status === "pending" || d.status === "processing");
     if (!hasActive) return;
-    const interval = setInterval(loadDocuments, 3000);
+    const interval = setInterval(() => loadDocuments(), 3000);
     return () => clearInterval(interval);
   }, [documents, loadDocuments]);
 
@@ -61,8 +62,11 @@ export default function WorkspacePage() {
         conversationId = conv.id;
         setActiveConversationId(conversationId);
       }
-      await api.uploadDocument(file, conversationId);
-      await loadDocuments();
+      const newDoc = await api.uploadDocument(file, conversationId);
+      if (newDoc) {
+        setDocuments((prev) => [newDoc, ...prev.filter((d) => d.id !== newDoc.id)]);
+      }
+      await loadDocuments(conversationId);
     } catch (err) {
       setUploadError(err.message);
     } finally {
