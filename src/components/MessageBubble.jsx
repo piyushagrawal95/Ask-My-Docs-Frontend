@@ -1,10 +1,22 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
-// Strip [n] citation markers from the displayed text — citations are kept
-// in the database (via message.citations) but not shown in the UI.
+// Strip [n], [excerpt n], (excerpt n) markers from displayed text
 function stripCitationMarkers(content) {
-  return content.replace(/\[(\d+)\]/g, "");
+  if (!content) return "";
+  return content
+    .replace(
+      /\[\s*(?:(?:excerpt|excerpts|source|sources|doc|docs|document|page|pages|ref|reference)s?\s*:?)?\s*#?\d+(?:\s*(?:,|and|&|–|-)\s*#?\d+)*\s*\]/gi,
+      ""
+    )
+    .replace(
+      /\(\s*(?:excerpt|excerpts|source|sources|doc|docs|document|page|pages|ref|reference)s?\s*:?\s*#?\d+(?:\s*(?:,|and|&|–|-)\s*#?\d+)*\s*\)/gi,
+      ""
+    )
+    .replace(/\[\s*(?:excerpt|excerpts|source|sources|reference)s?\s*\]/gi, "")
+    .replace(/\s+([.,;:!?])/g, "$1")
+    .replace(/[ \t]+/g, " ")
+    .trim();
 }
 
 export default function MessageBubble({ message }) {
