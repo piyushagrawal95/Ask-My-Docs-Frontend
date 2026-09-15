@@ -19,11 +19,13 @@ const LABELS = {
   failed: "Failed",
 };
 
-export default function StatusBadge({ status }) {
+export default function StatusBadge({ status,pagesProcessed, totalPages }) {
+  const showProgress=status==="processing" && !!totalPages;
+  const label=showProgress?pagesProcessed>=totalPages?"Finalizing...":`Processing ${pagesProcessed??0}/${totalPages}`:LABELS[status]||status;
   return (
     <span className={`inline-flex items-center gap-1.5 text-[11px] font-medium ${TEXT_STYLES[status] || "text-ink-onshellsoft"}`}>
       <span className={`w-1.5 h-1.5 rounded-full ${DOT_STYLES[status] || "bg-ink-onshellsoft"}`} />
-      {LABELS[status] || status}
+      {label}
     </span>
   );
 }

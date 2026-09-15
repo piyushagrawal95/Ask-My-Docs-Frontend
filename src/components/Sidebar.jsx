@@ -106,7 +106,7 @@ export default function Sidebar({
                 {doc.file_name}
               </span>
               <div className="flex items-center gap-1.5 shrink-0">
-                <StatusBadge status={doc.status} />
+                <StatusBadge status={doc.status} pagesProcessed={doc.pages_processed} totalPages={doc.page_count} />
                 {doc.status === "failed" && (
                   <button
                     onClick={() => onRetry(doc.id)}
