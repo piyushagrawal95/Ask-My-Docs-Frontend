@@ -16,6 +16,8 @@ export default function WorkspacePage() {
   const [asking, setAsking] = useState(false);
   const [askError, setAskError] = useState("");
   const [showSummarizePicker, setShowSummarizePicker] = useState(false);
+  const [initializing,setInitializing]=useState(true);
+  const [switchingConversation,setSwitchingConversation]=useState(false);
 
 
   const loadDocuments = useCallback(async (convId) => {
@@ -42,8 +44,7 @@ export default function WorkspacePage() {
   }, []);
 
   useEffect(() => {
-    loadDocuments();
-    loadConversations();
+    Promise.all([loadDocuments(),loadConversations()]).finally(()=>setInitializing(false));
   }, [loadDocuments, loadConversations]);
 
   // Poll documents while any are still pending/processing, so status updates without a refresh.
@@ -113,11 +114,15 @@ export default function WorkspacePage() {
   async function handleSelectConversation(id) {
     setActiveConversationId(id);
     setAskError("");
+    setSwitchingConversation(true);
     try {
       const res = await api.getConversation(id);
       setMessages(res.messages);
     } catch (err) {
       setAskError(err.message);
+    }
+    finally{
+      setSwitchingConversation(false);
     }
   }
 
@@ -210,7 +215,18 @@ export default function WorkspacePage() {
 
 
   const hasReadyDocuments = documents.some((d) => d.status === "ready");
+  if (initializing) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-paper">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-2 border-paper-line border-t-moss rounded-full animate-spin" />
+          <p className="text-[13px] text-ink-soft">Waking things up — this can take a moment…</p>
+        </div>
+      </div>
+    );
+  }
 
+ 
   return (
     <div className="flex h-screen overflow-hidden">
       {sidebarOpen && (
@@ -280,6 +296,7 @@ export default function WorkspacePage() {
             showSummarizePicker={showSummarizePicker}
             onSelectSummarizeDoc={handleSummarizeSelect}
             onCloseSummarizePicker={() => setShowSummarizePicker(false)}
+            loadingConversation={switchingConversation}
           />
         </div>
       </div>

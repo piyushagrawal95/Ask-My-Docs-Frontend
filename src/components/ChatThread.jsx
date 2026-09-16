@@ -46,6 +46,7 @@ export default function ChatThread({
   showSummarizePicker,
   onSelectSummarizeDoc,
   onCloseSummarizePicker,
+  loadingConversation
 }) {
   const [question, setQuestion] = useState("");
   const bottomRef = useRef(null);
@@ -64,11 +65,19 @@ export default function ChatThread({
   return (
     <div className="flex flex-col h-full min-h-0 flex-1 bg-paper">
       <div className="flex-1 overflow-y-auto px-8 py-8 space-y-5 min-h-0 scroll-thin scroll-thin-paper">
-        {messages.length === 0 && <EmptyState hasReadyDocuments={hasReadyDocuments} />}
+                {loadingConversation ? (
+          <div className="h-full flex items-center justify-center">
+            <div className="w-6 h-6 border-2 border-paper-line border-t-moss rounded-full animate-spin" />
+          </div>
+        ) : (
+          <>
+            {messages.length === 0 && <EmptyState hasReadyDocuments={hasReadyDocuments} />}
 
-        {messages.map((m) => (
-          <MessageBubble key={m.id} message={m} />
-        ))}
+            {messages.map((m) => (
+              <MessageBubble key={m.id} message={m} />
+            ))}
+          </>
+        )}
 
         {asking && (
           <div className="flex justify-start animate-rise">
