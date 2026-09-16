@@ -95,11 +95,18 @@ export default function WorkspacePage() {
   }
 
   async function handleRetry(id) {
+    // Optimistically update status to 'pending' so the badge changes immediately to 'Queued'
+    setDocuments((prev) =>
+      prev.map((doc) =>
+        doc.id === id ? { ...doc, status: "pending", error_message: null } : doc
+      )
+    );
     try {
       await api.reprocessDocument(id);
       await loadDocuments();
     } catch (err) {
       setUploadError(err.message);
+      await loadDocuments();
     }
   }
 
