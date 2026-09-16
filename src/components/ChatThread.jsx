@@ -36,7 +36,12 @@ function EmptyState({ hasReadyDocuments }) {
   );
 }
 
-export default function ChatThread({ messages, onAsk, asking, hasReadyDocuments }) {
+export default function ChatThread({ messages, onAsk, asking, hasReadyDocuments, onSummarize }) {
+  {messages.length==0 && hasReadyDocuments && (
+    <button onClick={onSummarize} disabled={asking} className="text-[13px] px-3 py-1.5 rounded-lg border border-paper-line hover: bg-paper-card transition-colors">
+      ✨ Summarize this document
+    </button>
+  )}
   const [question, setQuestion] = useState("");
   const bottomRef = useRef(null);
 

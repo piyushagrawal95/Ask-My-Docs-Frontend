@@ -246,6 +246,7 @@ export default function WorkspacePage() {
             onAsk={handleAsk}
             asking={asking}
             hasReadyDocuments={hasReadyDocuments}
+            onSummarize={()=>handleAsk("Please summarize this document")}
           />
         </div>
       </div>
