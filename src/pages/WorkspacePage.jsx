@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
+import DocumentsBar from "../components/DocumentsBar";
 import ChatThread from "../components/ChatThread";
 import { api } from "../lib/api";
 
@@ -14,7 +15,7 @@ export default function WorkspacePage() {
   const [messages, setMessages] = useState([]);
   const [asking, setAsking] = useState(false);
   const [askError, setAskError] = useState("");
-  const [showSummarizePicker,setShowSummarizePicker]=useState(false)
+  const [showSummarizePicker, setShowSummarizePicker] = useState(false);
 
 
   const loadDocuments = useCallback(async (convId) => {
@@ -137,7 +138,7 @@ export default function WorkspacePage() {
     }
   }
 
-  async function handleAsk(question,documentId=null) {
+  async function handleAsk(question, documentId = null) {
     let conversationId = activeConversationId;
     const isFirstMessage = messages.length === 0;
 
@@ -163,7 +164,7 @@ export default function WorkspacePage() {
     setAsking(true);
     setAskError("");
     try {
-      const assistantMessage = await api.askQuestion(conversationId, question,documentId);
+      const assistantMessage = await api.askQuestion(conversationId, question, documentId);
       setMessages((prev) => [...prev, assistantMessage]);
       if (isFirstMessage) {
         loadConversations();
@@ -185,21 +186,19 @@ export default function WorkspacePage() {
     }
   }
 
-  function handleSummarizeClick(){
-    const readyDocs=documents.filter((d)=>d.status==="ready")
-    if(readyDocs.length===1){
-      handleAsk("Please summarize this document",readyDocs[0].id);
-
-    }
-    else{
+  function handleSummarizeClick() {
+    const readyDocs = documents.filter((d) => d.status === "ready");
+    if (readyDocs.length === 1) {
+      handleAsk("Please summarize this document", readyDocs[0].id);
+    } else {
       setShowSummarizePicker(true);
     }
   }
 
-  function handleSummarizeSelect(documentId){
+  function handleSummarizeSelect(documentId) {
     setShowSummarizePicker(false);
-    const question=documentId?"Please summarize this document":"Please summarize all documents";
-    handleAsk(question,documentId);
+    const question = documentId ? "Please summarize this document" : "Please summarize all documents";
+    handleAsk(question, documentId);
   }
 
 
@@ -209,11 +208,6 @@ export default function WorkspacePage() {
     <div className="flex h-screen overflow-hidden">
       {sidebarOpen && (
         <Sidebar
-          documents={documents}
-          onUpload={handleUpload}
-          uploading={uploading}
-          onDelete={handleDelete}
-          onRetry={handleRetry}
           conversations={conversations}
           activeConversationId={activeConversationId}
           onSelectConversation={handleSelectConversation}
@@ -248,6 +242,14 @@ export default function WorkspacePage() {
           </span>
         </div>
 
+        <DocumentsBar
+          documents={documents}
+          onUpload={handleUpload}
+          uploading={uploading}
+          onDelete={handleDelete}
+          onRetry={handleRetry}
+        />
+
         <div className="flex-1 flex flex-col h-full min-h-0">
           {uploadError && (
             <p className="px-8 py-2 text-[13px] text-rust bg-rust/5 border-b border-paper-line shrink-0">
@@ -270,7 +272,7 @@ export default function WorkspacePage() {
             documents={documents}
             showSummarizePicker={showSummarizePicker}
             onSelectSummarizeDoc={handleSummarizeSelect}
-            onCloseSummarizePicker={()=>setShowSummarizePicker(false)}
+            onCloseSummarizePicker={() => setShowSummarizePicker(false)}
           />
         </div>
       </div>
