@@ -3,7 +3,7 @@ import { supabase } from "../lib/supabaseClient";
 
 const AuthContext = createContext(null);
 
-const IDLE_LIMIT_MS = 30 * 60 * 1000; // 30 minutes
+const IDLE_LIMIT_MS = 2 * 60 * 60 * 1000; // 30 minutes
 const LAST_ACTIVITY_KEY = "last_activity_at";
 const ACTIVITY_EVENTS = ["mousedown", "mousemove", "keydown", "scroll", "touchstart", "click"];
 
