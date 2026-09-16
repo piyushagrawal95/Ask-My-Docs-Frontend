@@ -36,7 +36,7 @@ function EmptyState({ hasReadyDocuments }) {
   );
 }
 
-export default function ChatThread({ messages, onAsk, asking, hasReadyDocuments, onSummarize }) {
+export default function ChatThread({ messages, onAsk, asking, hasReadyDocuments, onSummarize,documents, showSummarizePicker,onSelectSummarizeDoc,onCloseSummarizePicker }) {
   const [question, setQuestion] = useState("");
   const bottomRef = useRef(null);
 
@@ -57,16 +57,46 @@ export default function ChatThread({ messages, onAsk, asking, hasReadyDocuments,
         {messages.length === 0 && <EmptyState hasReadyDocuments={hasReadyDocuments} />}
 
         {messages.length === 0 && hasReadyDocuments && (
-          <div className="flex justify-center">
+  <div className="flex justify-center relative">
+    <button
+      onClick={onSummarize}
+      disabled={asking}
+      className="text-[13px] px-3 py-1.5 rounded-lg border border-paper-line hover:bg-paper-card transition-colors disabled:opacity-40"
+    >
+      ✨ Summarize this document
+    </button>
+
+    {showSummarizePicker && (
+      <div className="absolute top-full mt-2 w-64 bg-paper-card border border-paper-line rounded-lg shadow-lg z-10 py-1">
+        <button
+          onClick={() => onSelectSummarizeDoc(null)}
+          className="w-full text-left px-3 py-2 text-[13px] hover:bg-paper transition-colors font-medium"
+        >
+          📚 All documents
+        </button>
+        <div className="border-t border-paper-line my-1" />
+        {documents
+          .filter((d) => d.status === "ready")
+          .map((d) => (
             <button
-              onClick={onSummarize}
-              disabled={asking}
-              className="text-[13px] px-3 py-1.5 rounded-lg border border-paper-line hover:bg-paper-card transition-colors disabled:opacity-40"
+              key={d.id}
+              onClick={() => onSelectSummarizeDoc(d.id)}
+              className="w-full text-left px-3 py-2 text-[13px] hover:bg-paper transition-colors truncate"
             >
-              ✨ Summarize this document
+              📄 {d.file_name}
             </button>
-          </div>
-        )}
+          ))}
+        <div className="border-t border-paper-line my-1" />
+        <button
+          onClick={onCloseSummarizePicker}
+          className="w-full text-left px-3 py-2 text-[13px] text-ink-soft hover:bg-paper transition-colors"
+        >
+          Cancel
+        </button>
+      </div>
+    )}
+  </div>
+)}
 
         {messages.map((m) => (
           <MessageBubble key={m.id} message={m} />

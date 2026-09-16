@@ -124,12 +124,12 @@ export const api = {
     return handleResponse(res);
   },
 
-  async askQuestion(conversationId, question) {
-    const headers = await getAuthHeaders();
+  async askQuestion(conversationId, question,documentId=null) {
+    const authHeaders = await getAuthHeaders();
     const res = await fetchWithTimeOut (`${API_BASE_URL}/conversations/${conversationId}/messages`, {
       method: "POST",
-      headers: { ...headers, "Content-Type": "application/json" },
-      body: JSON.stringify({ question }),
+      headers: { ...authHeaders, "Content-Type": "application/json" },
+      body: JSON.stringify({ question, document_id:documentId}),
     });
     return handleResponse(res);
   },

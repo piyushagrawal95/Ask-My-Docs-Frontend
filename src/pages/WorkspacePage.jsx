@@ -14,6 +14,8 @@ export default function WorkspacePage() {
   const [messages, setMessages] = useState([]);
   const [asking, setAsking] = useState(false);
   const [askError, setAskError] = useState("");
+  const [showSummarizePicker,setShowSummarizePicker]=useState(false)
+
 
   const loadDocuments = useCallback(async (convId) => {
     const id = convId || activeConversationId;
@@ -135,7 +137,7 @@ export default function WorkspacePage() {
     }
   }
 
-  async function handleAsk(question) {
+  async function handleAsk(question,documentId=null) {
     let conversationId = activeConversationId;
     const isFirstMessage = messages.length === 0;
 
@@ -161,7 +163,7 @@ export default function WorkspacePage() {
     setAsking(true);
     setAskError("");
     try {
-      const assistantMessage = await api.askQuestion(conversationId, question);
+      const assistantMessage = await api.askQuestion(conversationId, question,documentId);
       setMessages((prev) => [...prev, assistantMessage]);
       if (isFirstMessage) {
         loadConversations();
@@ -182,6 +184,24 @@ export default function WorkspacePage() {
       setAsking(false);
     }
   }
+
+  function handleSummarizeClick(){
+    const readyDocs=documents.filter((d)=>d.status==="ready")
+    if(readyDocs.length===1){
+      handleAsk("Please summarize this document",readyDocs[0].id);
+
+    }
+    else{
+      setShowSummarizePicker(true);
+    }
+  }
+
+  function handleSummarizeSelect(documentId){
+    setShowSummarizePicker(false);
+    const question=documentId?"Please summarize this document":"Please summarize all documents";
+    handleAsk(question,documentId);
+  }
+
 
   const hasReadyDocuments = documents.some((d) => d.status === "ready");
 
@@ -246,7 +266,11 @@ export default function WorkspacePage() {
             onAsk={handleAsk}
             asking={asking}
             hasReadyDocuments={hasReadyDocuments}
-            onSummarize={()=>handleAsk("Please summarize this document")}
+            onSummarize={handleSummarizeClick}
+            documents={documents}
+            showSummarizePicker={setShowSummarizePicker}
+            onSelectSummarizeDoc={handleSummarizeSelect}
+            onCloseSummarizePicker={()=>setShowSummarizePicker(false)}
           />
         </div>
       </div>
