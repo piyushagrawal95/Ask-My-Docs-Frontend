@@ -36,7 +36,17 @@ function EmptyState({ hasReadyDocuments }) {
   );
 }
 
-export default function ChatThread({ messages, onAsk, asking, hasReadyDocuments, onSummarize,documents, showSummarizePicker,onSelectSummarizeDoc,onCloseSummarizePicker }) {
+export default function ChatThread({
+  messages,
+  onAsk,
+  asking,
+  hasReadyDocuments,
+  onSummarize,
+  documents,
+  showSummarizePicker,
+  onSelectSummarizeDoc,
+  onCloseSummarizePicker,
+}) {
   const [question, setQuestion] = useState("");
   const bottomRef = useRef(null);
 
@@ -56,48 +66,6 @@ export default function ChatThread({ messages, onAsk, asking, hasReadyDocuments,
       <div className="flex-1 overflow-y-auto px-8 py-8 space-y-5 min-h-0 scroll-thin scroll-thin-paper">
         {messages.length === 0 && <EmptyState hasReadyDocuments={hasReadyDocuments} />}
 
-        {messages.length === 0 && hasReadyDocuments && (
-  <div className="flex justify-center relative">
-    <button
-      onClick={onSummarize}
-      disabled={asking}
-      className="text-[13px] px-3 py-1.5 rounded-lg border border-paper-line hover:bg-paper-card transition-colors disabled:opacity-40"
-    >
-      ✨ Summarize this document
-    </button>
-
-    {showSummarizePicker && (
-      <div className="absolute top-full mt-2 w-64 bg-paper-card border border-paper-line rounded-lg shadow-lg z-10 py-1">
-        <button
-          onClick={() => onSelectSummarizeDoc(null)}
-          className="w-full text-left px-3 py-2 text-[13px] hover:bg-paper transition-colors font-medium"
-        >
-          📚 All documents
-        </button>
-        <div className="border-t border-paper-line my-1" />
-        {documents
-          .filter((d) => d.status === "ready")
-          .map((d) => (
-            <button
-              key={d.id}
-              onClick={() => onSelectSummarizeDoc(d.id)}
-              className="w-full text-left px-3 py-2 text-[13px] hover:bg-paper transition-colors truncate"
-            >
-              📄 {d.file_name}
-            </button>
-          ))}
-        <div className="border-t border-paper-line my-1" />
-        <button
-          onClick={onCloseSummarizePicker}
-          className="w-full text-left px-3 py-2 text-[13px] text-ink-soft hover:bg-paper transition-colors"
-        >
-          Cancel
-        </button>
-      </div>
-    )}
-  </div>
-)}
-
         {messages.map((m) => (
           <MessageBubble key={m.id} message={m} />
         ))}
@@ -113,6 +81,50 @@ export default function ChatThread({ messages, onAsk, asking, hasReadyDocuments,
         )}
         <div ref={bottomRef} />
       </div>
+
+      {/* Summarize action — always available (not just on an empty chat), so it
+          works again after first use and as soon as a new document is ready. */}
+      {hasReadyDocuments && (
+        <div className="flex justify-center relative px-8 pt-3 shrink-0">
+          <button
+            onClick={onSummarize}
+            disabled={asking}
+            className="text-[13px] px-3 py-1.5 rounded-lg border border-paper-line hover:bg-paper-card transition-colors disabled:opacity-40"
+          >
+            ✨ Summarize a document
+          </button>
+
+          {showSummarizePicker && (
+            <div className="absolute bottom-full mb-2 w-64 bg-paper-card border border-paper-line rounded-lg shadow-lg z-10 py-1">
+              <button
+                onClick={() => onSelectSummarizeDoc(null)}
+                className="w-full text-left px-3 py-2 text-[13px] hover:bg-paper transition-colors font-medium"
+              >
+                📚 All documents
+              </button>
+              <div className="border-t border-paper-line my-1" />
+              {documents
+                .filter((d) => d.status === "ready")
+                .map((d) => (
+                  <button
+                    key={d.id}
+                    onClick={() => onSelectSummarizeDoc(d.id)}
+                    className="w-full text-left px-3 py-2 text-[13px] hover:bg-paper transition-colors truncate"
+                  >
+                    📄 {d.file_name}
+                  </button>
+                ))}
+              <div className="border-t border-paper-line my-1" />
+              <button
+                onClick={onCloseSummarizePicker}
+                className="w-full text-left px-3 py-2 text-[13px] text-ink-soft hover:bg-paper transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          )}
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="border-t border-paper-line px-8 py-5 shrink-0">
         <div className="flex gap-3 max-w-3xl mx-auto">
