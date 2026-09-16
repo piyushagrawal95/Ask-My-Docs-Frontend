@@ -268,7 +268,7 @@ export default function WorkspacePage() {
             hasReadyDocuments={hasReadyDocuments}
             onSummarize={handleSummarizeClick}
             documents={documents}
-            showSummarizePicker={setShowSummarizePicker}
+            showSummarizePicker={showSummarizePicker}
             onSelectSummarizeDoc={handleSummarizeSelect}
             onCloseSummarizePicker={()=>setShowSummarizePicker(false)}
           />
