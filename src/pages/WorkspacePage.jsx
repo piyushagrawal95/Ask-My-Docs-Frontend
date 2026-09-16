@@ -201,7 +201,7 @@ export default function WorkspacePage() {
   function handleSummarizeClick() {
     const readyDocs = documents.filter((d) => d.status === "ready");
     if (readyDocs.length === 1) {
-      handleAsk("Please summarize this document", readyDocs[0].id);
+      handleAsk(`Please summarize this document (${readyDocs[0].file_name})`, readyDocs[0].id);
     } else {
       setShowSummarizePicker(true);
     }
@@ -209,8 +209,13 @@ export default function WorkspacePage() {
 
   function handleSummarizeSelect(documentId) {
     setShowSummarizePicker(false);
-    const question = documentId ? "Please summarize this document" : "Please summarize all documents";
-    handleAsk(question, documentId);
+    if(!documentId){
+      handleAsk("Please summarize all documents",null);
+      return;
+    }
+    const doc=documents.find((d)=>d.id===documentId);
+    const label=doc?doc.file_name:"this document"
+    handleAsk(`Please summarize this document (${label})`,documentId)
   }
 
 
