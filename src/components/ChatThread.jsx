@@ -37,11 +37,6 @@ function EmptyState({ hasReadyDocuments }) {
 }
 
 export default function ChatThread({ messages, onAsk, asking, hasReadyDocuments, onSummarize }) {
-  {messages.length==0 && hasReadyDocuments && (
-    <button onClick={onSummarize} disabled={asking} className="text-[13px] px-3 py-1.5 rounded-lg border border-paper-line hover: bg-paper-card transition-colors">
-      ✨ Summarize this document
-    </button>
-  )}
   const [question, setQuestion] = useState("");
   const bottomRef = useRef(null);
 
@@ -60,6 +55,18 @@ export default function ChatThread({ messages, onAsk, asking, hasReadyDocuments,
     <div className="flex flex-col h-full min-h-0 flex-1 bg-paper">
       <div className="flex-1 overflow-y-auto px-8 py-8 space-y-5 min-h-0 scroll-thin scroll-thin-paper">
         {messages.length === 0 && <EmptyState hasReadyDocuments={hasReadyDocuments} />}
+
+        {messages.length === 0 && hasReadyDocuments && (
+          <div className="flex justify-center">
+            <button
+              onClick={onSummarize}
+              disabled={asking}
+              className="text-[13px] px-3 py-1.5 rounded-lg border border-paper-line hover:bg-paper-card transition-colors disabled:opacity-40"
+            >
+              ✨ Summarize this document
+            </button>
+          </div>
+        )}
 
         {messages.map((m) => (
           <MessageBubble key={m.id} message={m} />
