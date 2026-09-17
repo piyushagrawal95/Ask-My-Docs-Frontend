@@ -67,7 +67,7 @@ export default function DocumentsBar({ documents, onUpload, uploading, onDelete,
       <div className="flex items-center gap-2 overflow-x-auto scroll-thin scroll-thin-paper min-w-0">
         {documents.length === 0 && (
           <span className="text-[12px] text-ink-soft/80 whitespace-nowrap">
-            No documents in this conversation yet — upload one to get started.
+            No documents in this conversation yet - upload one to get started.
           </span>
         )}
         {documents.map((doc) => (
