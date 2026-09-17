@@ -6,14 +6,40 @@ export default function Sidebar({
   onSelectConversation,
   onNewConversation,
   onDeleteConversation,
+  onToggleSidebar,
 }) {
   const { user, signOut } = useAuth();
 
   return (
     <aside className="w-72 shrink-0 bg-shell flex flex-col h-full min-h-0">
-      <div className="px-5 pt-6 pb-5">
-        <p className="font-serif text-[22px] leading-none text-ink-onshell">Ask My Docs</p>
-        <p className="mt-1.5 text-[12px] text-ink-onshellsoft">Your desk for reading, at a glance</p>
+      <div className="px-5 pt-6 pb-5 flex items-start justify-between">
+        <div>
+          <p className="font-serif text-[22px] leading-none text-ink-onshell">Ask My Docs</p>
+          <p className="mt-1.5 text-[12px] text-ink-onshellsoft">Your desk for reading, at a glance</p>
+        </div>
+        {onToggleSidebar && (
+          <button
+            type="button"
+            onClick={onToggleSidebar}
+            aria-label="Close sidebar"
+            className="mt-0.5 w-8 h-8 flex items-center justify-center rounded-lg text-ink-onshellsoft hover:bg-shell-light hover:text-ink-onshell transition-colors shrink-0"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={1.5}
+              className="w-5 h-5"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M3.75 5.25h16.5M3.75 12h16.5M3.75 18.75h16.5"
+              />
+            </svg>
+          </button>
+        )}
       </div>
 
       {/* Conversations */}
