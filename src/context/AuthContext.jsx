@@ -11,7 +11,12 @@ export function AuthProvider({ children }) {
   const [session, setSession] = useState(undefined); // undefined = still loading
   const idleTimerRef = useRef(null);
 
-  const signOut = () => supabase.auth.signOut();
+  const signOut = () => {
+    // Purana activity timestamp clear karo, taaki agli baar fresh sign-in
+    // hone par ye stale value idle-check ko galat trigger na kare.
+    localStorage.removeItem(LAST_ACTIVITY_KEY);
+    return supabase.auth.signOut();
+  };
 
   const resetIdleTimer = () => {
     localStorage.setItem(LAST_ACTIVITY_KEY, String(Date.now()));
@@ -22,21 +27,28 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSession(data.session));
 
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, newSession) => {
+    const { data: listener } = supabase.auth.onAuthStateChange((event, newSession) => {
+      if (event === "SIGNED_IN") {
+        // Fresh sign-in (password ya Google OAuth) — ye khud hi "activity"
+        // hai. Purane localStorage timestamp ko turant "abhi" par reset karo,
+        // warna neeche wala idle-check kal/purane stale timestamp ko dekh
+        // kar galti se turant sign-out kar dega.
+        localStorage.setItem(LAST_ACTIVITY_KEY, String(Date.now()));
+      }
       setSession(newSession);
     });
 
     return () => listener.subscription.unsubscribe();
   }, []);
 
-  // Idle-timeout: 30 min tak koi activity na ho to auto sign-out.
+  // Idle-timeout: IDLE_LIMIT_MS tak koi activity na ho to auto sign-out.
   useEffect(() => {
     if (!session) {
       if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
       return;
     }
 
-    // Tab band karke 30 min baad wapas khola ho, to turant logout kar do.
+    // Tab band karke IDLE_LIMIT_MS se zyada der baad wapas khola ho, to turant logout kar do.
     const lastActivity = Number(localStorage.getItem(LAST_ACTIVITY_KEY) || Date.now());
     if (Date.now() - lastActivity > IDLE_LIMIT_MS) {
       signOut();
