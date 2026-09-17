@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 
 export default function Sidebar({
@@ -6,9 +7,25 @@ export default function Sidebar({
   onSelectConversation,
   onNewConversation,
   onDeleteConversation,
+  onRenameConversation,
   onToggleSidebar,
 }) {
   const { user, signOut } = useAuth();
+  const [editingId, setEditingId] = useState(null);
+  const [draftTitle, setDraftTitle] = useState("");
+
+  function startEditing(c) {
+    setEditingId(c.id);
+    setDraftTitle(c.title || "");
+  }
+
+  function commitEdit() {
+    const trimmed = draftTitle.trim();
+    if (editingId && trimmed) {
+      onRenameConversation(editingId, trimmed);
+    }
+    setEditingId(null);
+  }
 
   return (
     <aside className="w-72 shrink-0 bg-shell flex flex-col h-full min-h-0">
@@ -56,16 +73,32 @@ export default function Sidebar({
         <ul className="space-y-0.5">
           {conversations.map((c) => (
             <li key={c.id} className="group flex items-center gap-1">
-              <button
-                onClick={() => onSelectConversation(c.id)}
-                className={`flex-1 min-w-0 text-left text-[13px] truncate px-3 py-2 rounded-md transition-colors ${
-                  c.id === activeConversationId
-                    ? "bg-moss text-white font-medium"
-                    : "text-ink-onshellsoft hover:bg-shell-light hover:text-ink-onshell"
-                }`}
-              >
-                {c.title || "Untitled conversation"}
-              </button>
+              {editingId === c.id ? (
+                <input
+                  autoFocus
+                  value={draftTitle}
+                  onChange={(e) => setDraftTitle(e.target.value)}
+                  onBlur={commitEdit}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") commitEdit();
+                    if (e.key === "Escape") setEditingId(null);
+                  }}
+                  className="flex-1 min-w-0 text-[13px] px-3 py-2 rounded-md bg-shell-light text-ink-onshell outline-none"
+                />
+              ) : (
+                <button
+                  onClick={() => onSelectConversation(c.id)}
+                  onDoubleClick={() => startEditing(c)}
+                  className={`flex-1 min-w-0 text-left text-[13px] truncate px-3 py-2 rounded-md transition-colors ${
+                    c.id === activeConversationId
+                      ? "bg-moss text-white font-medium"
+                      : "text-ink-onshellsoft hover:bg-shell-light hover:text-ink-onshell"
+                  }`}
+                  title="Double-click to rename"
+                >
+                  {c.title || "Untitled conversation"}
+                </button>
+              )}
               <button
                 onClick={(e) => {
                   e.stopPropagation();

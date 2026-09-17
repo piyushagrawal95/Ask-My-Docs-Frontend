@@ -29,6 +29,8 @@ async function fetchWithTimeOut(url,options={},timeoutMs=45000){
 }
 
 
+
+
 async function handleResponse(res) {
   if (!res.ok) {
     let detail = "Something went wrong.";
@@ -80,6 +82,16 @@ export const api = {
     const res = await fetch(`${API_BASE_URL}/documents/${id}`, {
       method: "DELETE",
       headers,
+    });
+    return handleResponse(res);
+  },
+
+  async renameConversation(id,title){
+    const headers=await getAuthHeaders();
+    const res=await fetch(`${API_BASE_URL}/conversations/${id}`,{
+      method:"PATCH",
+      headers : {...headers,"Content-Type":"application/json"},
+      body:JSON.stringify({title}),
     });
     return handleResponse(res);
   },

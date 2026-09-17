@@ -150,6 +150,17 @@ export default function WorkspacePage() {
     }
   }
 
+  async function handleRenameConversation(id, title) {
+    try {
+      await api.renameConversation(id, title);
+      setConversations((prev) =>
+        prev.map((c) => (c.id === id ? { ...c, title } : c))
+      );
+    } catch (err) {
+      setAskError(err.message);
+    }
+  }
+
   async function handleAsk(question, documentId = null) {
     let conversationId = activeConversationId;
     const isFirstMessage = messages.length === 0;
@@ -241,6 +252,7 @@ export default function WorkspacePage() {
           onSelectConversation={handleSelectConversation}
           onNewConversation={handleNewConversation}
           onDeleteConversation={handleDeleteConversation}
+          onRenameConversation={handleRenameConversation}
           onToggleSidebar={() => setSidebarOpen(false)}
         />
       )}
