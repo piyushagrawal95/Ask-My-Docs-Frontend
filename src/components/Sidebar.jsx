@@ -40,6 +40,7 @@ export default function Sidebar({
             onClick={onToggleSidebar}
             aria-label="Close sidebar"
             className="mt-0.5 w-8 h-8 flex items-center justify-center rounded-lg text-ink-onshellsoft hover:bg-shell-light hover:text-ink-onshell transition-colors shrink-0"
+            title="Close sidebar"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -52,7 +53,7 @@ export default function Sidebar({
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                d="M3.75 5.25h16.5M3.75 12h16.5M3.75 18.75h16.5"
+                d="M6 18L18 6M6 6l12 12"
               />
             </svg>
           </button>
@@ -74,43 +75,89 @@ export default function Sidebar({
           {conversations.map((c) => (
             <li key={c.id} className="group flex items-center gap-1">
               {editingId === c.id ? (
-                <input
-                  autoFocus
-                  value={draftTitle}
-                  onChange={(e) => setDraftTitle(e.target.value)}
-                  onBlur={commitEdit}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") commitEdit();
-                    if (e.key === "Escape") setEditingId(null);
-                  }}
-                  className="flex-1 min-w-0 text-[13px] px-3 py-2 rounded-md bg-shell-light text-ink-onshell outline-none"
-                />
+                <div className="flex-1 flex items-center gap-1 min-w-0">
+                  <input
+                    autoFocus
+                    value={draftTitle}
+                    onChange={(e) => setDraftTitle(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") commitEdit();
+                      if (e.key === "Escape") setEditingId(null);
+                    }}
+                    className="flex-1 min-w-0 text-[13px] px-2.5 py-1.5 rounded-md bg-shell-light text-ink-onshell border border-brass/50 outline-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      commitEdit();
+                    }}
+                    className="w-6 h-6 shrink-0 flex items-center justify-center rounded-full text-moss-soft hover:bg-moss/30 hover:text-white transition-all text-[13px] font-bold"
+                    title="Save"
+                  >
+                    ✓
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setEditingId(null);
+                    }}
+                    className="w-6 h-6 shrink-0 flex items-center justify-center rounded-full text-ink-onshellsoft hover:bg-rust/20 hover:text-rust transition-all text-[12px]"
+                    title="Cancel"
+                  >
+                    ✕
+                  </button>
+                </div>
               ) : (
-                <button
-                  onClick={() => onSelectConversation(c.id)}
-                  onDoubleClick={() => startEditing(c)}
-                  className={`flex-1 min-w-0 text-left text-[13px] truncate px-3 py-2 rounded-md transition-colors ${
-                    c.id === activeConversationId
-                      ? "bg-moss text-white font-medium"
-                      : "text-ink-onshellsoft hover:bg-shell-light hover:text-ink-onshell"
-                  }`}
-                  title="Double-click to rename"
-                >
-                  {c.title || "Untitled conversation"}
-                </button>
+                <>
+                  <button
+                    onClick={() => onSelectConversation(c.id)}
+                    className={`flex-1 min-w-0 text-left text-[13px] truncate px-3 py-2 rounded-md transition-colors ${
+                      c.id === activeConversationId
+                        ? "bg-moss text-white font-medium"
+                        : "text-ink-onshellsoft hover:bg-shell-light hover:text-ink-onshell"
+                    }`}
+                  >
+                    {c.title || "Untitled conversation"}
+                  </button>
+                  <div className="shrink-0 flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        startEditing(c);
+                      }}
+                      className="w-6 h-6 flex items-center justify-center rounded-full text-ink-onshellsoft hover:bg-shell-light hover:text-ink-onshell transition-all"
+                      aria-label="Rename conversation"
+                      title="Rename"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        className="w-3.5 h-3.5"
+                      >
+                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                      </svg>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (window.confirm("Delete this conversation and all its documents? This cannot be undone.")) {
+                          onDeleteConversation(c.id);
+                        }
+                      }}
+                      className="w-6 h-6 flex items-center justify-center rounded-full text-ink-onshellsoft hover:bg-rust/20 hover:text-rust transition-all"
+                      aria-label="Delete conversation"
+                      title="Delete"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </>
               )}
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (window.confirm("Delete this conversation and all its documents? This cannot be undone.")) {
-                    onDeleteConversation(c.id);
-                  }
-                }}
-                className="shrink-0 w-6 h-6 flex items-center justify-center rounded-full text-ink-onshellsoft opacity-0 group-hover:opacity-100 hover:bg-rust/20 hover:text-rust transition-all"
-                aria-label="Delete conversation"
-              >
-                ✕
-              </button>
             </li>
           ))}
         </ul>
