@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
-import { validatePassword } from "../lib/validation";
+import { validatePassword, getPasswordChecks } from "../lib/validation";
 
 export default function ResetPasswordPage() {
   const [ready, setReady] = useState(false);
@@ -12,6 +12,7 @@ export default function ResetPasswordPage() {
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [passwordTouched, setPasswordTouched] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -61,7 +62,11 @@ export default function ResetPasswordPage() {
     }
 
     setDone(true);
-    setTimeout(() => navigate("/"), 1500);
+    // Supabase ne is temporary session ko sign in kar diya hai jab reset link
+    // open hua — password set hone ke baad usko sign out karke login screen
+    // par bhejna hai, seedha app mein nahi.
+    await supabase.auth.signOut();
+    setTimeout(() => navigate("/auth"), 1500);
   }
 
   return (
@@ -92,7 +97,7 @@ export default function ResetPasswordPage() {
 
           {ready && done && (
             <p className="text-sm text-moss text-center">
-              Password updated. Redirecting you in…
+              Password updated. Redirecting you to sign in…
             </p>
           )}
 
@@ -110,6 +115,7 @@ export default function ResetPasswordPage() {
                     minLength={6}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    onFocus={() => setPasswordTouched(true)}
                     className="w-full rounded-lg border border-paper-line bg-paper-card px-3 py-2.5 pr-10 text-sm text-ink focus:border-moss focus:ring-2 focus:ring-moss-soft outline-none transition-shadow"
                     placeholder="••••••••"
                   />
@@ -132,6 +138,34 @@ export default function ResetPasswordPage() {
                     )}
                   </button>
                 </div>
+                {passwordTouched && (
+                  <ul className="mt-2 space-y-1">
+                    {getPasswordChecks(password).map((check) => (
+                      <li
+                        key={check.label}
+                        className={`flex items-center gap-1.5 text-xs transition-colors ${
+                          check.met ? "text-moss" : "text-ink-soft"
+                        }`}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                          className="w-3.5 h-3.5 shrink-0"
+                        >
+                          {check.met ? (
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                          ) : (
+                            <circle cx="12" cy="12" r="9" strokeWidth={1.5} />
+                          )}
+                        </svg>
+                        {check.label}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
               <div>
                 <label className="block text-xs text-ink-soft mb-1.5" htmlFor="confirmPassword">

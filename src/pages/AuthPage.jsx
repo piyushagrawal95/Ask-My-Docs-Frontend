@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
-import { validateEmail, validatePassword } from "../lib/validation";
+import { validateEmail, validatePassword, getPasswordChecks } from "../lib/validation";
 
 export default function AuthPage() {
   const [mode, setMode] = useState("signin"); // "signin" | "signup"
@@ -12,6 +12,8 @@ export default function AuthPage() {
   const [info, setInfo] = useState("");
   const [busy, setBusy] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [emailFieldError,setEmailFieldError]=useState("");
+  const [passwordTouched,setPasswordTouched]=useState(false);
   const [showForgot, setShowForgot] = useState(false);
   const [resetSent, setResetSent] = useState(false);
   const navigate = useNavigate();
@@ -245,10 +247,17 @@ export default function AuthPage() {
                 type="email"
                 required
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) =>{ setEmail(e.target.value);
+                  if(mode==="signup"){
+                    setEmailFieldError(validateEmail(e.target.value)||"");
+                  }
+                }}
                 className="w-full rounded-lg border border-paper-line bg-paper-card px-3 py-2.5 text-sm text-ink focus:border-moss focus:ring-2 focus:ring-moss-soft outline-none transition-shadow"
                 placeholder="you@example.com"
               />
+              {mode === "signup" && emailFieldError && (
+                <p className="mt-1.5 text-xs text-rust">{emailFieldError}</p>
+              )}
             </div>
             {!showForgot && (
               <div>
@@ -263,6 +272,7 @@ export default function AuthPage() {
                     minLength={6}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    onFocus={() => setPasswordTouched(true)}
                     className="w-full rounded-lg border border-paper-line bg-paper-card px-3 py-2.5 pr-10 text-sm text-ink focus:border-moss focus:ring-2 focus:ring-moss-soft outline-none transition-shadow"
                     placeholder="••••••••"
                   />
@@ -285,6 +295,34 @@ export default function AuthPage() {
                     )}
                   </button>
                 </div>
+                {mode === "signup" && passwordTouched && (
+                  <ul className="mt-2 space-y-1">
+                    {getPasswordChecks(password).map((check) => (
+                      <li
+                        key={check.label}
+                        className={`flex items-center gap-1.5 text-xs transition-colors ${
+                          check.met ? "text-moss" : "text-ink-soft"
+                        }`}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                          className="w-3.5 h-3.5 shrink-0"
+                        >
+                          {check.met ? (
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                          ) : (
+                            <circle cx="12" cy="12" r="9" strokeWidth={1.5} />
+                          )}
+                        </svg>
+                        {check.label}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
             )}
 

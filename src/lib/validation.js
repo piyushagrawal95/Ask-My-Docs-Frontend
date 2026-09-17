@@ -24,3 +24,13 @@ export function validatePassword(password) {
   }
   return null;
 }
+
+export function getPasswordChecks(password){
+  return[
+    { label : "At least 6 characters", met:password.length>=6},
+    { label : "One uppercase letter", met:/[A-Z]/.test(password)},
+    { label :"One lowercase letter", met:/[a-z]/.test(password)},
+    { label :"One Digit", met:/\d/.test(password)},
+    { label : "One special character",met:/[^A-Za-z0-9]/.test(password)}
+  ];
+}
