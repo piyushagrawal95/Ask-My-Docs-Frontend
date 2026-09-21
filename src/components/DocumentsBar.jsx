@@ -8,7 +8,7 @@ function fileKind(fileName = "") {
   return "TXT";
 }
 
-const MAX_DOCUMENTS_PER_CHAT = 10; // keep in sync with settings.max_documents_per_conversation on the backend
+const MAX_DOCUMENTS_PER_CHAT = 5; // keep in sync with settings.max_documents_per_conversation on the backend
 
 export default function DocumentsBar({ documents, onUpload, uploading, onDelete, onRetry }) {
   const fileInputRef = useRef(null);
