@@ -8,9 +8,12 @@ function fileKind(fileName = "") {
   return "TXT";
 }
 
+const MAX_DOCUMENTS_PER_CHAT = 10; // keep in sync with settings.max_documents_per_conversation on the backend
+
 export default function DocumentsBar({ documents, onUpload, uploading, onDelete, onRetry }) {
   const fileInputRef = useRef(null);
   const [dragOver, setDragOver] = useState(false);
+  const atLimit = documents.length >= MAX_DOCUMENTS_PER_CHAT;
 
   function handleFiles(files) {
     if (files && files[0]) onUpload(files[0]);
@@ -35,7 +38,8 @@ export default function DocumentsBar({ documents, onUpload, uploading, onDelete,
       <button
         type="button"
         onClick={() => fileInputRef.current?.click()}
-        disabled={uploading}
+        disabled={uploading || atLimit}
+        title={atLimit ? `Limit of ${MAX_DOCUMENTS_PER_CHAT} documents reached for this chat` : undefined}
         className="shrink-0 flex items-center gap-1.5 rounded-full border border-dashed border-paper-line px-3 py-1.5 text-[13px] font-medium text-ink-soft hover:border-brass/70 hover:text-ink hover:bg-paper-card transition-colors disabled:opacity-40"
       >
         <svg
@@ -52,7 +56,7 @@ export default function DocumentsBar({ documents, onUpload, uploading, onDelete,
             d="M12 16.5V9.75m0 0l-3.75 3.75M12 9.75l3.75 3.75M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z"
           />
         </svg>
-        {uploading ? "Uploading…" : "Add document"}
+        {uploading ? "Uploading…" : atLimit ? `Limit reached (${MAX_DOCUMENTS_PER_CHAT})` : "Add document"}
       </button>
       <input
         ref={fileInputRef}
@@ -61,6 +65,19 @@ export default function DocumentsBar({ documents, onUpload, uploading, onDelete,
         className="hidden"
         onChange={(e) => handleFiles(e.target.files)}
       />
+
+      <div className="h-5 w-px bg-paper-line shrink-0" />
+
+      <span
+        className={`shrink-0 text-[11px] font-medium tabular-nums px-2 py-1 rounded-full border ${
+          atLimit
+            ? "border-rust/40 bg-rust/10 text-rust"
+            : "border-paper-line bg-paper-card text-ink-soft"
+        }`}
+        title={`${documents.length} of ${MAX_DOCUMENTS_PER_CHAT} documents used in this chat`}
+      >
+        {documents.length}/{MAX_DOCUMENTS_PER_CHAT} docs
+      </span>
 
       <div className="h-5 w-px bg-paper-line shrink-0" />
 
@@ -93,7 +110,7 @@ export default function DocumentsBar({ documents, onUpload, uploading, onDelete,
             )}
             <button
               onClick={() => onDelete(doc.id)}
-              className="w-5 h-5 flex items-center justify-center rounded-full text-ink-soft opacity-0 group-hover:opacity-100 hover:bg-rust/20 hover:text-rust transition-all"
+              className="w-5 h-5 flex items-center justify-center rounded-full bg-paper-line/70 text-ink-soft opacity-0 group-hover:opacity-100 hover:bg-rust hover:text-white transition-all"
               aria-label="Delete document"
             >
               ✕
