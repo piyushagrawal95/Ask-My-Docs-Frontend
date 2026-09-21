@@ -110,10 +110,11 @@ export default function DocumentsBar({ documents, onUpload, uploading, onDelete,
             )}
             <button
               onClick={() => onDelete(doc.id)}
-              className="w-5 h-5 flex items-center justify-center rounded-full bg-paper-line/70 text-ink-soft opacity-0 group-hover:opacity-100 hover:bg-rust hover:text-white transition-all"
+              className="w-5 h-5 flex items-center justify-center rounded-full border border-paper-line bg-paper-card text-ink-soft shadow-xs hover:bg-rust hover:border-rust hover:text-white transition-all ml-0.5"
               aria-label="Delete document"
+              title="Delete document"
             >
-              ✕
+              <span className="text-[11px] font-bold leading-none select-none">✕</span>
             </button>
           </div>
         ))}

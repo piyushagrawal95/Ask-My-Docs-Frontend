@@ -39,7 +39,7 @@ export default function Sidebar({
             type="button"
             onClick={onToggleSidebar}
             aria-label="Close sidebar"
-            className="mt-0.5 w-8 h-8 flex items-center justify-center rounded-lg text-ink-onshellsoft hover:bg-shell-light hover:text-ink-onshell transition-colors shrink-0"
+            className="mt-0.5 w-8 h-8 flex items-center justify-center rounded-lg border border-shell-line bg-shell-light/80 text-ink-onshell shadow-sm hover:bg-shell-light hover:border-brass/50 hover:text-white transition-all shrink-0 active:scale-95"
             title="Close sidebar"
           >
             <svg
@@ -149,7 +149,7 @@ export default function Sidebar({
                           onDeleteConversation(c.id);
                         }
                       }}
-                      className="w-6 h-6 flex items-center justify-center rounded-full text-ink-onshellsoft hover:bg-rust/20 hover:text-rust transition-all"
+                      className="w-6 h-6 flex items-center justify-center rounded-md border border-shell-line bg-shell-light/80 text-ink-onshellsoft hover:bg-rust hover:border-rust hover:text-white shadow-xs transition-all text-[11px]"
                       aria-label="Delete conversation"
                       title="Delete"
                     >
