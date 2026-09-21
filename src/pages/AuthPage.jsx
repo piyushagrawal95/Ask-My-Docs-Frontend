@@ -8,12 +8,13 @@ export default function AuthPage() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [info, setInfo] = useState("");
   const [busy, setBusy] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [emailFieldError,setEmailFieldError]=useState("");
-  const [passwordTouched,setPasswordTouched]=useState(false);
+  const [emailFieldError, setEmailFieldError] = useState("");
+  const [passwordTouched, setPasswordTouched] = useState(false);
   const [showForgot, setShowForgot] = useState(false);
   const [resetSent, setResetSent] = useState(false);
   const navigate = useNavigate();
@@ -69,6 +70,10 @@ export default function AuthPage() {
       const passwordError = validatePassword(password);
       if (passwordError) {
         setError(passwordError);
+        return;
+      }
+      if (password !== confirmPassword) {
+        setError("Passwords do not match.");
         return;
       }
     }
@@ -134,9 +139,9 @@ export default function AuthPage() {
       provider: "google",
       options: {
         redirectTo: `${window.location.origin}/auth`,
-        queryParams:{
-          prompt:"select_account"
-        }
+        queryParams: {
+          prompt: "select_account",
+        },
       },
     });
   }
@@ -180,6 +185,8 @@ export default function AuthPage() {
               onClick={() => {
                 setMode("signin");
                 setShowForgot(false);
+                setConfirmPassword("");
+                setError("");
               }}
               type="button"
             >
@@ -194,6 +201,8 @@ export default function AuthPage() {
               onClick={() => {
                 setMode("signup");
                 setShowForgot(false);
+                setConfirmPassword("");
+                setError("");
               }}
               type="button"
             >
@@ -247,9 +256,10 @@ export default function AuthPage() {
                 type="email"
                 required
                 value={email}
-                onChange={(e) =>{ setEmail(e.target.value);
-                  if(mode==="signup"){
-                    setEmailFieldError(validateEmail(e.target.value)||"");
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (mode === "signup") {
+                    setEmailFieldError(validateEmail(e.target.value) || "");
                   }
                 }}
                 className="w-full rounded-lg border border-paper-line bg-paper-card px-3 py-2.5 text-sm text-ink focus:border-moss focus:ring-2 focus:ring-moss-soft outline-none transition-shadow"
@@ -259,6 +269,7 @@ export default function AuthPage() {
                 <p className="mt-1.5 text-xs text-rust">{emailFieldError}</p>
               )}
             </div>
+
             {!showForgot && (
               <div>
                 <label className="block text-xs text-ink-soft mb-1.5" htmlFor="password">
@@ -326,6 +337,30 @@ export default function AuthPage() {
               </div>
             )}
 
+            {/* Confirm Password field on Signup */}
+            {mode === "signup" && !showForgot && (
+              <div>
+                <label className="block text-xs text-ink-soft mb-1.5" htmlFor="confirmPassword">
+                  Confirm password
+                </label>
+                <div className="relative">
+                  <input
+                    id="confirmPassword"
+                    type={showPassword ? "text" : "password"}
+                    required
+                    minLength={6}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="w-full rounded-lg border border-paper-line bg-paper-card px-3 py-2.5 pr-10 text-sm text-ink focus:border-moss focus:ring-2 focus:ring-moss-soft outline-none transition-shadow"
+                    placeholder="••••••••"
+                  />
+                </div>
+                {confirmPassword && password !== confirmPassword && (
+                  <p className="mt-1.5 text-xs text-rust">Passwords do not match</p>
+                )}
+              </div>
+            )}
+
             {mode === "signin" && !showForgot && (
               <div className="text-right">
                 <button
@@ -366,9 +401,16 @@ export default function AuthPage() {
                   </p>
                   <button
                     type="button"
-                    onClick={() => setShowForgot(false)}
-                    className="text-xs text-ink-soft hover:text-moss transition-colors"
+                    onClick={() => {
+                      setShowForgot(false);
+                      setError("");
+                      setInfo("");
+                    }}
+                    className="w-full flex items-center justify-center gap-2 rounded-lg border border-paper-line bg-paper-card py-2.5 text-xs font-medium text-ink hover:border-ink/30 hover:bg-paper-card/80 transition-all shadow-xs active:scale-[0.99]"
                   >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                      <path fillRule="evenodd" d="M17 10a.75.75 0 01-.75.75H5.612l4.158 3.96a.75.75 0 11-1.04 1.08l-5.5-5.25a.75.75 0 010-1.08l5.5-5.25a.75.75 0 111.04 1.08L5.612 9.25H16.25A.75.75 0 0117 10z" clipRule="evenodd" />
+                    </svg>
                     Back to sign in
                   </button>
                 </div>
@@ -387,9 +429,16 @@ export default function AuthPage() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => setShowForgot(false)}
-                    className="text-xs text-ink-soft hover:text-moss transition-colors"
+                    onClick={() => {
+                      setShowForgot(false);
+                      setError("");
+                      setInfo("");
+                    }}
+                    className="w-full flex items-center justify-center gap-2 rounded-lg border border-paper-line bg-paper-card py-2.5 text-xs font-medium text-ink hover:border-ink/30 hover:bg-paper-card/80 transition-all shadow-xs active:scale-[0.99]"
                   >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                      <path fillRule="evenodd" d="M17 10a.75.75 0 01-.75.75H5.612l4.158 3.96a.75.75 0 11-1.04 1.08l-5.5-5.25a.75.75 0 010-1.08l5.5-5.25a.75.75 0 111.04 1.08L5.612 9.25H16.25A.75.75 0 0117 10z" clipRule="evenodd" />
+                    </svg>
                     Back to sign in
                   </button>
                 </div>
