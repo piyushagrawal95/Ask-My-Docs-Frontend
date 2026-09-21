@@ -396,9 +396,14 @@ export default function AuthPage() {
             <div className="mt-4 border-t border-paper-line pt-4">
               {resetSent ? (
                 <div className="space-y-3">
-                  <p className="text-sm text-moss">
-                    Reset link sent to <span className="font-medium">{email}</span>. Check your inbox.
-                  </p>
+                  <div className="rounded-lg bg-moss/10 border border-moss/20 p-3 text-center">
+                    <p className="text-sm font-medium text-moss">
+                      Reset link sent!
+                    </p>
+                    <p className="mt-1 text-xs text-ink-soft">
+                      We sent instructions to <span className="font-semibold text-ink">{email}</span>. Check your inbox.
+                    </p>
+                  </div>
                   <button
                     type="button"
                     onClick={() => {
@@ -406,24 +411,29 @@ export default function AuthPage() {
                       setError("");
                       setInfo("");
                     }}
-                    className="w-full flex items-center justify-center gap-2 rounded-lg border border-paper-line bg-paper-card py-2.5 text-xs font-medium text-ink hover:border-ink/30 hover:bg-paper-card/80 transition-all shadow-xs active:scale-[0.99]"
+                    className="w-full flex items-center justify-center gap-2 rounded-lg border border-paper-line bg-white/90 py-2.5 text-[13px] font-medium text-ink hover:text-moss hover:border-moss/40 hover:bg-white shadow-sm hover:shadow transition-all duration-150 active:scale-[0.98] group cursor-pointer"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      className="w-4 h-4 text-ink-soft transition-transform duration-150 group-hover:-translate-x-1 group-hover:text-moss"
+                    >
                       <path fillRule="evenodd" d="M17 10a.75.75 0 01-.75.75H5.612l4.158 3.96a.75.75 0 11-1.04 1.08l-5.5-5.25a.75.75 0 010-1.08l5.5-5.25a.75.75 0 111.04 1.08L5.612 9.25H16.25A.75.75 0 0117 10z" clipRule="evenodd" />
                     </svg>
-                    Back to sign in
+                    <span>Back to sign in</span>
                   </button>
                 </div>
               ) : (
                 <div className="space-y-3">
                   <p className="text-xs text-ink-soft">
-                    Enter your email above and we'll send you a reset link.
+                    Enter your email above and we'll send you a password reset link.
                   </p>
                   <button
                     type="button"
                     disabled={busy || !email}
                     onClick={handleForgotPassword}
-                    className="w-full rounded-lg bg-moss text-white py-2.5 text-sm font-medium shadow-sm hover:bg-moss-dark active:scale-[0.99] transition-all disabled:opacity-50"
+                    className="w-full rounded-lg bg-moss text-white py-2.5 text-sm font-medium shadow-sm hover:bg-moss-dark active:scale-[0.99] transition-all disabled:opacity-50 cursor-pointer"
                   >
                     {busy ? "Sending…" : "Send reset link"}
                   </button>
@@ -434,12 +444,17 @@ export default function AuthPage() {
                       setError("");
                       setInfo("");
                     }}
-                    className="w-full flex items-center justify-center gap-2 rounded-lg border border-paper-line bg-paper-card py-2.5 text-xs font-medium text-ink hover:border-ink/30 hover:bg-paper-card/80 transition-all shadow-xs active:scale-[0.99]"
+                    className="w-full flex items-center justify-center gap-2 rounded-lg border border-paper-line bg-white/90 py-2.5 text-[13px] font-medium text-ink hover:text-moss hover:border-moss/40 hover:bg-white shadow-sm hover:shadow transition-all duration-150 active:scale-[0.98] group cursor-pointer"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      className="w-4 h-4 text-ink-soft transition-transform duration-150 group-hover:-translate-x-1 group-hover:text-moss"
+                    >
                       <path fillRule="evenodd" d="M17 10a.75.75 0 01-.75.75H5.612l4.158 3.96a.75.75 0 11-1.04 1.08l-5.5-5.25a.75.75 0 010-1.08l5.5-5.25a.75.75 0 111.04 1.08L5.612 9.25H16.25A.75.75 0 0117 10z" clipRule="evenodd" />
                     </svg>
-                    Back to sign in
+                    <span>Back to sign in</span>
                   </button>
                 </div>
               )}
