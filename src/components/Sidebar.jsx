@@ -39,7 +39,7 @@ export default function Sidebar({
             type="button"
             onClick={onToggleSidebar}
             aria-label="Close sidebar"
-            className="mt-0.5 w-8 h-8 flex items-center justify-center rounded-lg border border-shell-line bg-shell-light/80 text-ink-onshell shadow-sm hover:bg-shell-light hover:border-brass/50 hover:text-white transition-all shrink-0 active:scale-95"
+            className="w-8 h-8 flex items-center justify-center rounded-lg bg-[#25355a] border border-[#3b4f7d] text-ink-onshell shadow-md ring-1 ring-white/10 hover:bg-brass hover:border-brass hover:text-white hover:shadow-lg transition-all duration-200 shrink-0 cursor-pointer active:scale-90 group"
             title="Close sidebar"
           >
             <svg
@@ -47,8 +47,8 @@ export default function Sidebar({
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              strokeWidth={1.5}
-              className="w-5 h-5"
+              strokeWidth={2.2}
+              className="w-4 h-4 transition-transform duration-200 group-hover:rotate-90"
             >
               <path
                 strokeLinecap="round"
@@ -149,11 +149,20 @@ export default function Sidebar({
                           onDeleteConversation(c.id);
                         }
                       }}
-                      className="w-6 h-6 flex items-center justify-center rounded-md border border-shell-line bg-shell-light/80 text-ink-onshellsoft hover:bg-rust hover:border-rust hover:text-white shadow-xs transition-all text-[11px]"
+                      className="w-6 h-6 flex items-center justify-center rounded-md bg-rust/20 border border-rust/40 text-rust hover:bg-rust hover:border-rust hover:text-white transition-all shadow-xs active:scale-90"
                       aria-label="Delete conversation"
                       title="Delete"
                     >
-                      ✕
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={2.5}
+                        className="w-3 h-3"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
                     </button>
                   </div>
                 </>

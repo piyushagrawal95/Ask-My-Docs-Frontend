@@ -110,11 +110,20 @@ export default function DocumentsBar({ documents, onUpload, uploading, onDelete,
             )}
             <button
               onClick={() => onDelete(doc.id)}
-              className="w-5 h-5 flex items-center justify-center rounded-full border border-paper-line bg-paper-card text-ink-soft shadow-xs hover:bg-rust hover:border-rust hover:text-white transition-all ml-0.5"
+              className="w-5 h-5 flex items-center justify-center rounded-full bg-rust/10 border border-rust/30 text-rust hover:bg-rust hover:border-rust hover:text-white transition-all shadow-xs ml-1 shrink-0 active:scale-90 group/btn"
               aria-label="Delete document"
               title="Delete document"
             >
-              <span className="text-[11px] font-bold leading-none select-none">✕</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2.5}
+                className="w-3 h-3 transition-transform group-hover/btn:scale-110"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
             </button>
           </div>
         ))}
