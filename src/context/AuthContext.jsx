@@ -15,6 +15,7 @@ export function AuthProvider({ children }) {
     // Purana activity timestamp clear karo, taaki agli baar fresh sign-in
     // hone par ye stale value idle-check ko galat trigger na kare.
     localStorage.removeItem(LAST_ACTIVITY_KEY);
+    sessionStorage.removeItem("cleaned_empty_chats_session");
     return supabase.auth.signOut();
   };
 

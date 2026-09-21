@@ -37,14 +37,31 @@ export default function WorkspacePage() {
   const loadConversations = useCallback(async () => {
     try {
       const res = await api.listConversations();
-      setConversations(res.conversations);
+      let convs = res.conversations || [];
+
+      // Auto-close empty conversations on new login session:
+      // An open chat with no document remains open while logged in,
+      // but is automatically closed/deleted the next time the user logs in.
+      const CLEANUP_KEY = "cleaned_empty_chats_session";
+      if (!sessionStorage.getItem(CLEANUP_KEY)) {
+        sessionStorage.setItem(CLEANUP_KEY, "true");
+        const emptyConvs = convs.filter((c) => (c.document_count || 0) === 0);
+        if (emptyConvs.length > 0) {
+          for (const empty of emptyConvs) {
+            api.deleteConversation(empty.id).catch(() => {});
+          }
+          convs = convs.filter((c) => (c.document_count || 0) > 0);
+        }
+      }
+
+      setConversations(convs);
     } catch {
       // ignore
     }
   }, []);
 
   useEffect(() => {
-    Promise.all([loadDocuments(),loadConversations()]).finally(()=>setInitializing(false));
+    Promise.all([loadDocuments(), loadConversations()]).finally(() => setInitializing(false));
   }, [loadDocuments, loadConversations]);
 
   // Poll documents while any are still pending/processing, so status updates without a refresh.
@@ -62,13 +79,20 @@ export default function WorkspacePage() {
       let conversationId = activeConversationId;
       if (!conversationId) {
         const conv = await api.createConversation();
-        setConversations((prev) => [conv, ...prev]);
+        setConversations((prev) => [{ ...conv, document_count: 0 }, ...prev]);
         conversationId = conv.id;
         setActiveConversationId(conversationId);
       }
       const newDoc = await api.uploadDocument(file, conversationId);
       if (newDoc) {
         setDocuments((prev) => [newDoc, ...prev.filter((d) => d.id !== newDoc.id)]);
+        setConversations((prev) =>
+          prev.map((c) =>
+            c.id === conversationId
+              ? { ...c, document_count: (c.document_count || 0) + 1 }
+              : c
+          )
+        );
       }
       await loadDocuments(conversationId);
     } catch (err) {
@@ -89,6 +113,13 @@ export default function WorkspacePage() {
   async function handleDelete(id) {
     try {
       await api.deleteDocument(id);
+      setConversations((prev) =>
+        prev.map((c) =>
+          c.id === activeConversationId
+            ? { ...c, document_count: Math.max(0, (c.document_count || 1) - 1) }
+            : c
+        )
+      );
       await loadDocuments();
     } catch (err) {
       setUploadError(err.message);
@@ -129,7 +160,7 @@ export default function WorkspacePage() {
   async function handleNewConversation() {
     try {
       const conv = await api.createConversation();
-      setConversations((prev) => [conv, ...prev]);
+      setConversations((prev) => [{ ...conv, document_count: 0 }, ...prev]);
       setActiveConversationId(conv.id);
       setMessages([]);
     } catch (err) {

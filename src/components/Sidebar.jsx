@@ -13,18 +13,28 @@ export default function Sidebar({
   const { user, signOut } = useAuth();
   const [editingId, setEditingId] = useState(null);
   const [draftTitle, setDraftTitle] = useState("");
+  const [deletingId, setDeletingId] = useState(null);
+  const [renamingId, setRenamingId] = useState(null);
 
   function startEditing(c) {
+    if ((c.document_count || 0) === 0) return;
     setEditingId(c.id);
     setDraftTitle(c.title || "");
   }
 
-  function commitEdit() {
+  async function commitEdit() {
     const trimmed = draftTitle.trim();
     if (editingId && trimmed) {
-      onRenameConversation(editingId, trimmed);
+      setRenamingId(editingId);
+      try {
+        await onRenameConversation(editingId, trimmed);
+        setEditingId(null);
+      } finally {
+        setRenamingId(null);
+      }
+    } else {
+      setEditingId(null);
     }
-    setEditingId(null);
   }
 
   return (
@@ -78,32 +88,39 @@ export default function Sidebar({
                 <div className="flex-1 flex items-center gap-1 min-w-0">
                   <input
                     autoFocus
+                    disabled={renamingId === c.id}
                     value={draftTitle}
                     onChange={(e) => setDraftTitle(e.target.value)}
                     onKeyDown={(e) => {
                       if (e.key === "Enter") commitEdit();
                       if (e.key === "Escape") setEditingId(null);
                     }}
-                    className="flex-1 min-w-0 text-[13px] px-2.5 py-1.5 rounded-md bg-shell-light text-ink-onshell border border-brass/50 outline-none"
+                    className="flex-1 min-w-0 text-[13px] px-2.5 py-1.5 rounded-md bg-shell-light text-ink-onshell border border-brass/50 outline-none disabled:opacity-50"
                   />
                   <button
                     type="button"
+                    disabled={renamingId === c.id}
                     onClick={(e) => {
                       e.stopPropagation();
                       commitEdit();
                     }}
-                    className="w-6 h-6 shrink-0 flex items-center justify-center rounded-full text-moss-soft hover:bg-moss/30 hover:text-white transition-all text-[13px] font-bold"
+                    className="w-6 h-6 shrink-0 flex items-center justify-center rounded-md bg-moss/30 border border-moss/50 text-moss-soft hover:bg-moss hover:text-white transition-all text-[13px] font-bold disabled:opacity-60 cursor-pointer"
                     title="Save"
                   >
-                    ✓
+                    {renamingId === c.id ? (
+                      <div className="w-3 h-3 border-2 border-moss-soft border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      "✓"
+                    )}
                   </button>
                   <button
                     type="button"
+                    disabled={renamingId === c.id}
                     onClick={(e) => {
                       e.stopPropagation();
                       setEditingId(null);
                     }}
-                    className="w-6 h-6 shrink-0 flex items-center justify-center rounded-full text-ink-onshellsoft hover:bg-rust/20 hover:text-rust transition-all text-[12px]"
+                    className="w-6 h-6 shrink-0 flex items-center justify-center rounded-md text-ink-onshellsoft hover:bg-rust/20 hover:text-rust transition-all text-[12px] disabled:opacity-40 cursor-pointer"
                     title="Cancel"
                   >
                     ✕
@@ -121,48 +138,69 @@ export default function Sidebar({
                   >
                     {c.title || "Untitled conversation"}
                   </button>
-                  <div className="shrink-0 flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="shrink-0 flex items-center opacity-0 group-hover:opacity-100 transition-opacity gap-1">
+                    {(() => {
+                      const hasDocs = (c.document_count || 0) > 0;
+                      return (
+                        <button
+                          type="button"
+                          disabled={!hasDocs}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (!hasDocs) return;
+                            startEditing(c);
+                          }}
+                          className={`w-6 h-6 flex items-center justify-center rounded-md border border-shell-line bg-shell-light/80 shadow-xs transition-all ${
+                            hasDocs
+                              ? "text-ink-onshellsoft hover:bg-shell-line hover:text-ink-onshell cursor-pointer"
+                              : "opacity-30 cursor-not-allowed text-ink-onshellsoft/40"
+                          }`}
+                          aria-label="Rename conversation"
+                          title={hasDocs ? "Rename conversation" : "Cannot rename a chat with no documents uploaded"}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                            className="w-3.5 h-3.5"
+                          >
+                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                          </svg>
+                        </button>
+                      );
+                    })()}
                     <button
                       type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        startEditing(c);
-                      }}
-                      className="w-6 h-6 flex items-center justify-center rounded-full text-ink-onshellsoft hover:bg-shell-light hover:text-ink-onshell transition-all"
-                      aria-label="Rename conversation"
-                      title="Rename"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                        className="w-3.5 h-3.5"
-                      >
-                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                      </svg>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={(e) => {
+                      disabled={deletingId === c.id}
+                      onClick={async (e) => {
                         e.stopPropagation();
                         if (window.confirm("Delete this conversation and all its documents? This cannot be undone.")) {
-                          onDeleteConversation(c.id);
+                          setDeletingId(c.id);
+                          try {
+                            await onDeleteConversation(c.id);
+                          } finally {
+                            setDeletingId(null);
+                          }
                         }
                       }}
-                      className="w-6 h-6 flex items-center justify-center rounded-md bg-rust/20 border border-rust/40 text-rust hover:bg-rust hover:border-rust hover:text-white transition-all shadow-xs active:scale-90"
+                      className="w-6 h-6 flex items-center justify-center rounded-md bg-rust/20 border border-rust/40 text-rust hover:bg-rust hover:border-rust hover:text-white transition-all shadow-xs active:scale-90 disabled:opacity-60 cursor-pointer"
                       aria-label="Delete conversation"
                       title="Delete"
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth={2.5}
-                        className="w-3 h-3"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                      </svg>
+                      {deletingId === c.id ? (
+                        <div className="w-3 h-3 border-2 border-rust-soft border-t-transparent rounded-full animate-spin" />
+                      ) : (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth={2.5}
+                          className="w-3 h-3"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      )}
                     </button>
                   </div>
                 </>
