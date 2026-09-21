@@ -13,6 +13,7 @@ const MAX_DOCUMENTS_PER_CHAT = 5; // keep in sync with settings.max_documents_pe
 export default function DocumentsBar({ documents, onUpload, uploading, onDelete, onRetry }) {
   const fileInputRef = useRef(null);
   const [dragOver, setDragOver] = useState(false);
+  const [deletingDocId, setDeletingDocId] = useState(null);
   const atLimit = documents.length >= MAX_DOCUMENTS_PER_CHAT;
 
   function handleFiles(files) {
@@ -87,46 +88,64 @@ export default function DocumentsBar({ documents, onUpload, uploading, onDelete,
             No documents in this conversation yet - upload one to get started.
           </span>
         )}
-        {documents.map((doc) => (
-          <div
-            key={doc.id}
-            className="group shrink-0 flex items-center gap-2 rounded-full pl-3 pr-1.5 py-1 border border-paper-line bg-paper-card"
-          >
-            <span className="text-[9px] font-semibold tracking-wide text-brass">{fileKind(doc.file_name)}</span>
-            <span
-              className="max-w-[140px] text-[12px] text-ink truncate"
-              title={doc.status === "failed" ? doc.error_message : doc.file_name}
+        {documents.map((doc) => {
+          const isDeleting = deletingDocId === doc.id;
+          return (
+            <div
+              key={doc.id}
+              className={`group shrink-0 flex items-center gap-2 rounded-full pl-3 pr-1.5 py-1 border border-paper-line bg-paper-card transition-all ${
+                isDeleting ? "opacity-60 pointer-events-none" : ""
+              }`}
             >
-              {doc.file_name}
-            </span>
-            <StatusBadge status={doc.status} pagesProcessed={doc.pages_processed} totalPages={doc.page_count} />
-            {doc.status === "failed" && (
+              <span className="text-[9px] font-semibold tracking-wide text-brass">{fileKind(doc.file_name)}</span>
+              <span
+                className="max-w-[140px] text-[12px] text-ink truncate"
+                title={doc.status === "failed" ? doc.error_message : doc.file_name}
+              >
+                {doc.file_name}
+              </span>
+              <StatusBadge status={doc.status} pagesProcessed={doc.pages_processed} totalPages={doc.page_count} />
+              {doc.status === "failed" && (
+                <button
+                  onClick={() => onRetry(doc.id)}
+                  className="text-[11px] text-brass hover:text-brass-dark transition-colors"
+                >
+                  Retry
+                </button>
+              )}
               <button
-                onClick={() => onRetry(doc.id)}
-                className="text-[11px] text-brass hover:text-brass-dark transition-colors"
+                type="button"
+                disabled={isDeleting}
+                onClick={async () => {
+                  setDeletingDocId(doc.id);
+                  try {
+                    await onDelete(doc.id);
+                  } finally {
+                    setDeletingDocId(null);
+                  }
+                }}
+                className="w-5 h-5 flex items-center justify-center rounded-full bg-rust/10 border border-rust/30 text-rust hover:bg-rust hover:border-rust hover:text-white transition-all shadow-xs ml-1 shrink-0 active:scale-90 group/btn cursor-pointer disabled:opacity-60"
+                aria-label="Delete document"
+                title="Delete document"
               >
-                Retry
+                {isDeleting ? (
+                  <div className="w-2.5 h-2.5 border-[1.5px] border-rust border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2.5}
+                    className="w-3 h-3 transition-transform group-hover/btn:scale-110"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                )}
               </button>
-            )}
-            <button
-              onClick={() => onDelete(doc.id)}
-              className="w-5 h-5 flex items-center justify-center rounded-full bg-rust/10 border border-rust/30 text-rust hover:bg-rust hover:border-rust hover:text-white transition-all shadow-xs ml-1 shrink-0 active:scale-90 group/btn"
-              aria-label="Delete document"
-              title="Delete document"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={2.5}
-                className="w-3 h-3 transition-transform group-hover/btn:scale-110"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-        ))}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
