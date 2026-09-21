@@ -116,7 +116,7 @@ export default function WorkspacePage() {
         );
         delete conversationCacheRef.current[conversationId];
       }
-      await loadDocuments(conversationId);
+      
     } catch (err) {
       setUploadError(err.message);
     } finally {
