@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import Sidebar from "../components/Sidebar";
 import DocumentsBar from "../components/DocumentsBar";
 import ChatThread from "../components/ChatThread";
@@ -16,9 +16,21 @@ export default function WorkspacePage() {
   const [asking, setAsking] = useState(false);
   const [askError, setAskError] = useState("");
   const [showSummarizePicker, setShowSummarizePicker] = useState(false);
-  const [initializing,setInitializing]=useState(true);
-  const [switchingConversation,setSwitchingConversation]=useState(false);
+  const [initializing, setInitializing] = useState(true);
+  const [switchingConversation, setSwitchingConversation] = useState(false);
 
+  // In-memory cache to make conversation switching 0ms instant (optimistic)
+  const conversationCacheRef = useRef({});
+
+  // Keep in-memory cache synchronized with latest messages & documents
+  useEffect(() => {
+    if (activeConversationId && !switchingConversation) {
+      conversationCacheRef.current[activeConversationId] = {
+        messages,
+        documents,
+      };
+    }
+  }, [activeConversationId, messages, documents, switchingConversation]);
 
   const loadDocuments = useCallback(async (convId) => {
     const id = convId || activeConversationId;
@@ -28,7 +40,11 @@ export default function WorkspacePage() {
     }
     try {
       const res = await api.listDocuments(id);
-      setDocuments(res.documents || []);
+      const docs = res.documents || [];
+      setDocuments(docs);
+      if (conversationCacheRef.current[id]) {
+        conversationCacheRef.current[id].documents = docs;
+      }
     } catch {
       // ignore
     }
@@ -40,8 +56,6 @@ export default function WorkspacePage() {
       let convs = res.conversations || [];
 
       // Auto-close empty conversations on new login session:
-      // An open chat with no document remains open while logged in,
-      // but is automatically closed/deleted the next time the user logs in.
       const CLEANUP_KEY = "cleaned_empty_chats_session";
       if (!sessionStorage.getItem(CLEANUP_KEY)) {
         sessionStorage.setItem(CLEANUP_KEY, "true");
@@ -60,17 +74,24 @@ export default function WorkspacePage() {
     }
   }, []);
 
+  // Initial load only: run once when mounting
   useEffect(() => {
-    Promise.all([loadDocuments(), loadConversations()]).finally(() => setInitializing(false));
-  }, [loadDocuments, loadConversations]);
+    let mounted = true;
+    loadConversations().finally(() => {
+      if (mounted) setInitializing(false);
+    });
+    return () => {
+      mounted = false;
+    };
+  }, [loadConversations]);
 
-  // Poll documents while any are still pending/processing, so status updates without a refresh.
+  // Poll documents ONLY while any are actively pending or processing
   useEffect(() => {
     const hasActive = documents.some((d) => d.status === "pending" || d.status === "processing");
-    if (!hasActive) return;
-    const interval = setInterval(() => loadDocuments(), 3000);
+    if (!hasActive || !activeConversationId) return;
+    const interval = setInterval(() => loadDocuments(activeConversationId), 3000);
     return () => clearInterval(interval);
-  }, [documents, loadDocuments]);
+  }, [documents, activeConversationId, loadDocuments]);
 
   async function handleUpload(file) {
     setUploading(true);
@@ -93,6 +114,7 @@ export default function WorkspacePage() {
               : c
           )
         );
+        delete conversationCacheRef.current[conversationId];
       }
       await loadDocuments(conversationId);
     } catch (err) {
@@ -111,23 +133,26 @@ export default function WorkspacePage() {
   }, [uploadError]);
 
   async function handleDelete(id) {
+    // Optimistically update UI immediately
+    setDocuments((prev) => prev.filter((d) => d.id !== id));
+    setConversations((prev) =>
+      prev.map((c) =>
+        c.id === activeConversationId
+          ? { ...c, document_count: Math.max(0, (c.document_count || 1) - 1) }
+          : c
+      )
+    );
+    delete conversationCacheRef.current[activeConversationId];
     try {
       await api.deleteDocument(id);
-      setConversations((prev) =>
-        prev.map((c) =>
-          c.id === activeConversationId
-            ? { ...c, document_count: Math.max(0, (c.document_count || 1) - 1) }
-            : c
-        )
-      );
       await loadDocuments();
     } catch (err) {
       setUploadError(err.message);
+      await loadDocuments();
     }
   }
 
   async function handleRetry(id) {
-    // Optimistically update status to 'pending' so the badge changes immediately to 'Queued'
     setDocuments((prev) =>
       prev.map((doc) =>
         doc.id === id ? { ...doc, status: "pending", error_message: null } : doc
@@ -143,16 +168,43 @@ export default function WorkspacePage() {
   }
 
   async function handleSelectConversation(id) {
+    if (id === activeConversationId) return;
+
     setActiveConversationId(id);
     setAskError("");
-    setSwitchingConversation(true);
+
+    // Optimistic loading: If user already visited this conversation, show cached messages instantly!
+    const cached = conversationCacheRef.current[id];
+    if (cached) {
+      setMessages(cached.messages);
+      setDocuments(cached.documents);
+    } else {
+      setSwitchingConversation(true);
+      setMessages([]);
+      setDocuments([]);
+    }
+
     try {
-      const res = await api.getConversation(id);
-      setMessages(res.messages);
+      // Parallel flight for messages and documents
+      const [convRes, docRes] = await Promise.all([
+        api.getConversation(id),
+        api.listDocuments(id),
+      ]);
+
+      const freshMessages = convRes.messages || [];
+      const freshDocs = docRes.documents || [];
+
+      // Update in-memory cache
+      conversationCacheRef.current[id] = {
+        messages: freshMessages,
+        documents: freshDocs,
+      };
+
+      setMessages(freshMessages);
+      setDocuments(freshDocs);
     } catch (err) {
       setAskError(err.message);
-    }
-    finally{
+    } finally {
       setSwitchingConversation(false);
     }
   }
@@ -163,21 +215,27 @@ export default function WorkspacePage() {
       setConversations((prev) => [{ ...conv, document_count: 0 }, ...prev]);
       setActiveConversationId(conv.id);
       setMessages([]);
+      setDocuments([]);
+      conversationCacheRef.current[conv.id] = { messages: [], documents: [] };
     } catch (err) {
       setAskError(err.message);
     }
   }
 
   async function handleDeleteConversation(id) {
+    // Optimistic UI update: Remove immediately from list
+    delete conversationCacheRef.current[id];
+    setConversations((prev) => prev.filter((c) => c.id !== id));
+    if (id === activeConversationId) {
+      setActiveConversationId(null);
+      setMessages([]);
+      setDocuments([]);
+    }
     try {
       await api.deleteConversation(id);
-      setConversations((prev) => prev.filter((c) => c.id !== id));
-      if (id === activeConversationId) {
-        setActiveConversationId(null);
-        setMessages([]);
-      }
     } catch (err) {
       setAskError(err.message);
+      loadConversations();
     }
   }
 
