@@ -277,23 +277,41 @@ export default function WorkspacePage() {
     setAskError("");
     try {
       const assistantMessage = await api.askQuestion(conversationId, question, documentId);
-      setMessages((prev) => [...prev, assistantMessage]);
-      if (isFirstMessage) {
+      const cached=conversationCacheRef.current[conversationId];
+      const updatedMessages=cached?[...cached.messages,assistantMessage]:[assistantMessage];
+      conversationCacheRef.current[conversationId]={
+        ...cached,
+        messages:updatedMessages
+      }
+      if(conversationId === activeConversationId){
+        setMessages((prev)=>[...prev,assistantMessage]);
+      }
+      if(isFirstMessage){
         loadConversations();
       }
+      
+      
     } catch (err) {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: `local-error-${Date.now()}`,
-          role: "assistant",
-          content: "Something went wrong sending your question. Please try again.",
-          citations: [],
-          is_answerable: false,
-        },
-      ]);
-      setAskError(err.message);
-    } finally {
+      const errorMessage={
+        id:`local-error-${Date.now()}`,
+        role:"assistant",
+        content:"Something went wrong sending your question. Please try again.",
+        citations:[],
+        is_answerable:false,
+      }
+      const cached=conversationCacheRef.current[conversationId];
+      if(cached){
+        conversationCacheRef.current[conversationId]={
+          ...cached,messages:[...cached.messages,errorMessage]
+        }
+      }
+      if(conversationId  === activeConversationId){
+        setMessages((prev)=>[...prev,errorMessage]);
+        setAskError(err.message);
+      }
+      
+    }
+    finally{
       setAsking(false);
     }
   }
