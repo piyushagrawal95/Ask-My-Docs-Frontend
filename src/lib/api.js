@@ -51,7 +51,7 @@ async function handleResponse(res) {
 export const api = {
   async listDocuments(conversationId) {
     const headers = await getAuthHeaders();
-    const res = await fetch(
+    const res = await fetchWithTimeOut(
       `${API_BASE_URL}/documents?conversation_id=${encodeURIComponent(conversationId)}`,
       { headers }
     );
@@ -63,23 +63,23 @@ export const api = {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("conversation_id", conversationId);
-    const res = await fetch(`${API_BASE_URL}/documents`, {
+    const res = await fetchWithTimeOut(`${API_BASE_URL}/documents`, {
       method: "POST",
       headers,
       body: formData,
-    });
+    }, 90000);
     return handleResponse(res);
   },
 
   async getDocument(id) {
     const headers = await getAuthHeaders();
-    const res = await fetch(`${API_BASE_URL}/documents/${id}`, { headers });
+    const res = await fetchWithTimeOut(`${API_BASE_URL}/documents/${id}`, { headers });
     return handleResponse(res);
   },
 
   async deleteDocument(id) {
     const headers = await getAuthHeaders();
-    const res = await fetch(`${API_BASE_URL}/documents/${id}`, {
+    const res = await fetchWithTimeOut(`${API_BASE_URL}/documents/${id}`, {
       method: "DELETE",
       headers,
     });
@@ -88,7 +88,7 @@ export const api = {
 
   async renameConversation(id,title){
     const headers=await getAuthHeaders();
-    const res=await fetch(`${API_BASE_URL}/conversations/${id}`,{
+    const res=await fetchWithTimeOut(`${API_BASE_URL}/conversations/${id}`,{
       method:"PATCH",
       headers : {...headers,"Content-Type":"application/json"},
       body:JSON.stringify({title}),
@@ -98,7 +98,7 @@ export const api = {
 
   async reprocessDocument(id){
     const headers=await getAuthHeaders();
-    const res=await fetch (`${API_BASE_URL}/documents/${id}/reprocess`,{
+    const res=await fetchWithTimeOut(`${API_BASE_URL}/documents/${id}/reprocess`,{
       method:"POST",
       headers
     });
@@ -107,13 +107,13 @@ export const api = {
 
   async listConversations() {
     const headers = await getAuthHeaders();
-    const res = await fetch(`${API_BASE_URL}/conversations`, { headers });
+    const res = await fetchWithTimeOut(`${API_BASE_URL}/conversations`, { headers });
     return handleResponse(res);
   },
 
   async createConversation() {
     const headers = await getAuthHeaders();
-    const res = await fetch(`${API_BASE_URL}/conversations`, {
+    const res = await fetchWithTimeOut(`${API_BASE_URL}/conversations`, {
       method: "POST",
       headers,
     });
@@ -122,13 +122,13 @@ export const api = {
 
   async getConversation(id) {
     const headers = await getAuthHeaders();
-    const res = await fetch(`${API_BASE_URL}/conversations/${id}`, { headers });
+    const res = await fetchWithTimeOut(`${API_BASE_URL}/conversations/${id}`, { headers });
     return handleResponse(res);
   },
 
   async deleteConversation(id){
     const headers=await getAuthHeaders();
-    const res=await fetch(`${API_BASE_URL}/conversations/${id}`,
+    const res=await fetchWithTimeOut(`${API_BASE_URL}/conversations/${id}`,
     {
       method:"DELETE",
       headers
@@ -138,7 +138,7 @@ export const api = {
 
   async askQuestion(conversationId, question,documentId=null) {
     const authHeaders = await getAuthHeaders();
-    const res = await fetchWithTimeOut (`${API_BASE_URL}/conversations/${conversationId}/messages`, {
+    const res = await fetchWithTimeOut(`${API_BASE_URL}/conversations/${conversationId}/messages`, {
       method: "POST",
       headers: { ...authHeaders, "Content-Type": "application/json" },
       body: JSON.stringify({ question, document_id:documentId}),

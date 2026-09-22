@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import { validateEmail, validatePassword, getPasswordChecks } from "../lib/validation";
+import { useDarkMode } from "../hooks/useDarkMode";
 
 export default function AuthPage() {
+  const [isDark, setIsDark] = useDarkMode();
   const [mode, setMode] = useState("signin"); // "signin" | "signup"
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -135,19 +137,58 @@ export default function AuthPage() {
 
   async function handleGoogleSignIn() {
     setError("");
-    await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/auth`,
-        queryParams: {
-          prompt: "select_account",
+    setBusy(true);
+    try {
+      const { error: signInErr } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/auth`,
+          queryParams: {
+            prompt: "select_account",
+          },
         },
-      },
-    });
+      });
+      if (signInErr) {
+        setError(signInErr.message);
+        setBusy(false);
+      }
+    } catch (err) {
+      setError(err.message || "Failed to initialize Google sign-in.");
+      setBusy(false);
+    }
   }
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex relative">
+      {/* Theme Toggle Button */}
+      <button
+        type="button"
+        onClick={() => setIsDark((prev) => !prev)}
+        aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+        title={isDark ? "Switch to light mode" : "Switch to dark mode"}
+        className="absolute top-5 right-5 z-20 inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-paper-line bg-paper-card text-ink-soft hover:text-ink hover:border-moss/40 shadow-xs hover:shadow-sm transition-all duration-200 cursor-pointer"
+      >
+        {isDark ? (
+          <>
+            <span className="w-4 h-4 rounded-full bg-amber-400/20 text-amber-400 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5 text-amber-400">
+                <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z" />
+              </svg>
+            </span>
+            <span className="text-[12px] font-medium text-ink">Dark</span>
+          </>
+        ) : (
+          <>
+            <span className="w-4 h-4 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5 text-slate-700">
+                <path fillRule="evenodd" d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.701-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 01.818.162z" clipRule="evenodd" />
+              </svg>
+            </span>
+            <span className="text-[12px] font-medium text-ink">Light</span>
+          </>
+        )}
+      </button>
+
       {/* Left panel — the desk. Hidden on small screens. */}
       <div className="hidden lg:flex w-[42%] shrink-0 bg-shell flex-col justify-between px-14 py-14">
         <p className="font-serif text-xl text-ink-onshell">Ask My Docs</p>
@@ -212,16 +253,21 @@ export default function AuthPage() {
 
           <button
             type="button"
+            disabled={busy}
             onClick={handleGoogleSignIn}
-            className="w-full flex items-center justify-center gap-2 rounded-lg border border-paper-line bg-paper-card py-2.5 text-sm font-medium text-ink hover:border-ink/20 transition-colors mb-4"
+            className="w-full flex items-center justify-center gap-2 rounded-lg border border-paper-line bg-paper-card py-2.5 text-sm font-medium text-ink hover:border-ink/20 transition-colors mb-4 disabled:opacity-60 cursor-pointer"
           >
-            <svg width="16" height="16" viewBox="0 0 48 48" aria-hidden="true">
-              <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.9 32.5 29.4 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z"/>
-              <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.9 18.9 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/>
-              <path fill="#4CAF50" d="M24 44c5.3 0 10.2-2 13.9-5.4l-6.4-5.4C29.4 34.9 26.8 36 24 36c-5.4 0-9.9-3.5-11.4-8.3l-6.6 5.1C9.5 39.6 16.2 44 24 44z"/>
-              <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.2 5.7l6.4 5.4C41.4 35.5 44 30.1 44 24c0-1.3-.1-2.7-.4-3.5z"/>
-            </svg>
-            Continue with Google
+            {busy ? (
+              <div className="w-4 h-4 border-2 border-moss border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <svg width="16" height="16" viewBox="0 0 48 48" aria-hidden="true">
+                <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.9 32.5 29.4 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z"/>
+                <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.9 18.9 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/>
+                <path fill="#4CAF50" d="M24 44c5.3 0 10.2-2 13.9-5.4l-6.4-5.4C29.4 34.9 26.8 36 24 36c-5.4 0-9.9-3.5-11.4-8.3l-6.6 5.1C9.5 39.6 16.2 44 24 44z"/>
+                <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.2 5.7l6.4 5.4C41.4 35.5 44 30.1 44 24c0-1.3-.1-2.7-.4-3.5z"/>
+              </svg>
+            )}
+            <span>{busy ? "Connecting…" : "Continue with Google"}</span>
           </button>
 
           <div className="flex items-center gap-3 mb-4">
@@ -385,9 +431,12 @@ export default function AuthPage() {
               <button
                 type="submit"
                 disabled={busy}
-                className="w-full rounded-lg bg-moss text-white py-2.5 text-sm font-medium shadow-sm hover:bg-moss-dark active:scale-[0.99] transition-all disabled:opacity-50"
+                className="w-full rounded-lg bg-moss text-white py-2.5 text-sm font-medium shadow-sm hover:bg-moss-dark active:scale-[0.99] transition-all disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
               >
-                {busy ? "Please wait…" : mode === "signin" ? "Sign in" : "Create account"}
+                {busy && (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                )}
+                <span>{busy ? "Please wait…" : mode === "signin" ? "Sign in" : "Create account"}</span>
               </button>
             )}
           </form>
@@ -411,7 +460,7 @@ export default function AuthPage() {
                       setError("");
                       setInfo("");
                     }}
-                    className="w-full flex items-center justify-center gap-2 rounded-lg border border-paper-line bg-white/90 py-2.5 text-[13px] font-medium text-ink hover:text-moss hover:border-moss/40 hover:bg-white shadow-sm hover:shadow transition-all duration-150 active:scale-[0.98] group cursor-pointer"
+                    className="w-full flex items-center justify-center gap-2 rounded-lg border border-paper-line bg-paper-card py-2.5 text-[13px] font-medium text-ink hover:text-moss hover:border-moss/40 hover:bg-paper-card/80 shadow-sm hover:shadow transition-all duration-150 active:scale-[0.98] group cursor-pointer"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -433,9 +482,12 @@ export default function AuthPage() {
                     type="button"
                     disabled={busy || !email}
                     onClick={handleForgotPassword}
-                    className="w-full rounded-lg bg-moss text-white py-2.5 text-sm font-medium shadow-sm hover:bg-moss-dark active:scale-[0.99] transition-all disabled:opacity-50 cursor-pointer"
+                    className="w-full rounded-lg bg-moss text-white py-2.5 text-sm font-medium shadow-sm hover:bg-moss-dark active:scale-[0.99] transition-all disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    {busy ? "Sending…" : "Send reset link"}
+                    {busy && (
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    )}
+                    <span>{busy ? "Sending…" : "Send reset link"}</span>
                   </button>
                   <button
                     type="button"
@@ -444,7 +496,7 @@ export default function AuthPage() {
                       setError("");
                       setInfo("");
                     }}
-                    className="w-full flex items-center justify-center gap-2 rounded-lg border border-paper-line bg-white/90 py-2.5 text-[13px] font-medium text-ink hover:text-moss hover:border-moss/40 hover:bg-white shadow-sm hover:shadow transition-all duration-150 active:scale-[0.98] group cursor-pointer"
+                    className="w-full flex items-center justify-center gap-2 rounded-lg border border-paper-line bg-paper-card py-2.5 text-[13px] font-medium text-ink hover:text-moss hover:border-moss/40 hover:bg-paper-card/80 shadow-sm hover:shadow transition-all duration-150 active:scale-[0.98] group cursor-pointer"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"

@@ -10,6 +10,7 @@ const ACTIVITY_EVENTS = ["mousedown", "mousemove", "keydown", "scroll", "touchst
 export function AuthProvider({ children }) {
   const [session, setSession] = useState(undefined); // undefined = still loading
   const idleTimerRef = useRef(null);
+  const lastActivityWriteRef = useRef(0);
 
   const signOut = () => {
     // Purana activity timestamp clear karo, taaki agli baar fresh sign-in
@@ -20,7 +21,13 @@ export function AuthProvider({ children }) {
   };
 
   const resetIdleTimer = () => {
-    localStorage.setItem(LAST_ACTIVITY_KEY, String(Date.now()));
+    const now = Date.now();
+    // Throttle localStorage.setItem: har mouse move / scroll par synchronously write karne se lag hota hai.
+    // 30 second me ek baar update karna session activity check ke liye perfectly accurate hai.
+    if (now - lastActivityWriteRef.current > 30000) {
+      localStorage.setItem(LAST_ACTIVITY_KEY, String(now));
+      lastActivityWriteRef.current = now;
+    }
     if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
     idleTimerRef.current = setTimeout(signOut, IDLE_LIMIT_MS);
   };
