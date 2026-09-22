@@ -4,13 +4,34 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --color-paper: #F2EFE7;
+  --color-paper-card: #FDFCF8;
+  --color-paper-line: #E2DDCC;
+  --color-ink: #1C1A15;
+  --color-ink-soft: #6E6858;
+  --color-moss: #2F5D50;
+  --color-moss-soft: #DEE9E2;
+}
+
+.dark {
+  --color-paper: #16213B;
+  --color-paper-card: #203050;
+  --color-paper-line: #2C3E63;
+  --color-ink: #E9E6DA;
+  --color-ink-soft: #8D97B5;
+  --color-moss: #4A8A79;
+  --color-moss-soft: #234639;
+}
+
 * {
   -webkit-font-smoothing: antialiased;
 }
 
 body {
-  background-color: #F2EFE7;
+  background-color: var(--color-paper);
   color: #1C1A15;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 :focus-visible {

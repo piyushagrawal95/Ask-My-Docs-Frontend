@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode:"class",
   content: ["./index.html", "./src/**/*.{js,jsx}"],
   theme: {
     extend: {
@@ -10,20 +11,20 @@ export default {
           line: "#2C3E63",
         },
         paper: {
-          DEFAULT: "#F2EFE7",
-          card: "#FDFCF8",
-          line: "#E2DDCC",
+          DEFAULT: "var(--color-paper)",
+          card: "var(--color-paper-card)",
+          line: "var(--color-paper-line)",
         },
         ink: {
-          DEFAULT: "#1C1A15",
-          soft: "#6E6858",
+          DEFAULT: "var(--color-ink)",
+          soft: "var(--color-ink-soft)",
           onshell: "#E9E6DA",
           onshellsoft: "#8D97B5",
         },
         moss: {
-          DEFAULT: "#2F5D50",
+          DEFAULT: "var(--color-moss)",
           dark: "#234639",
-          soft: "#DEE9E2",
+          soft: "var(--color-moss-soft)",
         },
         brass: {
           DEFAULT: "#B08946",

@@ -3,8 +3,10 @@ import Sidebar from "../components/Sidebar";
 import DocumentsBar from "../components/DocumentsBar";
 import ChatThread from "../components/ChatThread";
 import { api } from "../lib/api";
+import { useDarkMode } from "../hooks/useDarkMode";
 
 export default function WorkspacePage() {
+  const [isDark, setIsDark]=useDarkMode();
   const [documents, setDocuments] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState("");
@@ -390,6 +392,23 @@ export default function WorkspacePage() {
           <span className="text-[13px] text-ink-soft">
             {hasReadyDocuments ? "Documents ready — ask away." : "Upload a document to get started."}
           </span>
+
+          <button
+            type="button"
+            onClick={() => setIsDark((prev) => !prev)}
+            aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+            className="ml-auto w-8 h-8 flex items-center justify-center rounded-lg text-ink-soft hover:bg-paper-card hover:text-ink transition-colors"
+          >
+            {isDark ? (
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-5 h-5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1.5m0 15V21m8.25-9H21M3 12h1.5m14.16-6.66l-1.06 1.06M6.4 17.6l-1.06 1.06m0-12.32L6.4 6.4m12.32 12.32l-1.06-1.06M17 12a5 5 0 11-10 0 5 5 0 0110 0z" />
+              </svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-5 h-5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21.752 15.002A9.72 9.72 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+              </svg>
+            )}
+          </button>
         </div>
 
         <DocumentsBar
