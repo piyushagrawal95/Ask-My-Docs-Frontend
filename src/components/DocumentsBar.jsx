@@ -117,6 +117,7 @@ export default function DocumentsBar({ documents, onUpload, uploading, onDelete,
                 type="button"
                 disabled={isDeleting}
                 onClick={async () => {
+                  if(!window.confirm(`Delete "${doc.file_name}"? This cannot be undone.`)) return;
                   setDeletingDocId(doc.id);
                   try {
                     await onDelete(doc.id);
