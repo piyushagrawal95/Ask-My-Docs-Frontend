@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 export default function Sidebar({
   conversations,
   activeConversationId,
+  creatingConversation = false,
   onSelectConversation,
   onNewConversation,
   onDeleteConversation,
@@ -75,10 +76,20 @@ export default function Sidebar({
         <div className="flex items-center justify-between mb-2">
           <p className="text-[11px] font-medium text-ink-onshellsoft">Conversations</p>
           <button
+            type="button"
+            disabled={creatingConversation}
             onClick={onNewConversation}
-            className="text-[12px] font-medium text-brass hover:text-brass-dark transition-colors"
+            aria-label="Create new conversation"
+            className="inline-flex items-center gap-1.5 text-[12px] font-medium text-brass hover:text-brass-dark transition-colors disabled:opacity-60 cursor-pointer"
           >
-            + New
+            {creatingConversation ? (
+              <>
+                <span className="w-3 h-3 border-2 border-brass border-t-transparent rounded-full animate-spin" />
+                <span>Creating…</span>
+              </>
+            ) : (
+              <span>+ New</span>
+            )}
           </button>
         </div>
         <ul className="space-y-0.5">

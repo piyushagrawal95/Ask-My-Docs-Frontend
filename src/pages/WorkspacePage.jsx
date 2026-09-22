@@ -20,6 +20,7 @@ export default function WorkspacePage() {
   const [showSummarizePicker, setShowSummarizePicker] = useState(false);
   const [initializing, setInitializing] = useState(true);
   const [switchingConversation, setSwitchingConversation] = useState(false);
+  const [creatingConversation, setCreatingConversation] = useState(false);
 
   // In-memory cache to make conversation switching 0ms instant (optimistic)
   const conversationCacheRef = useRef({});
@@ -212,6 +213,8 @@ export default function WorkspacePage() {
   }
 
   async function handleNewConversation() {
+    if (creatingConversation) return;
+    setCreatingConversation(true);
     try {
       const conv = await api.createConversation();
       setConversations((prev) => [{ ...conv, document_count: 0 }, ...prev]);
@@ -221,6 +224,8 @@ export default function WorkspacePage() {
       conversationCacheRef.current[conv.id] = { messages: [], documents: [] };
     } catch (err) {
       setAskError(err.message);
+    } finally {
+      setCreatingConversation(false);
     }
   }
 
@@ -358,6 +363,7 @@ export default function WorkspacePage() {
         <Sidebar
           conversations={conversations}
           activeConversationId={activeConversationId}
+          creatingConversation={creatingConversation}
           onSelectConversation={handleSelectConversation}
           onNewConversation={handleNewConversation}
           onDeleteConversation={handleDeleteConversation}
