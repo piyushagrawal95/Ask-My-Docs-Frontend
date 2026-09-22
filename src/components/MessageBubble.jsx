@@ -66,10 +66,6 @@ export default function MessageBubble({ message }) {
                 <span className="text-[12px] font-medium tracking-wide text-ink font-sans">
                   Answer
                 </span>
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-moss/10 text-moss border border-moss/20">
-                  <span className="w-1 h-1 rounded-full bg-moss animate-pulse" />
-                  Grounded
-                </span>
               </div>
 
               <button
