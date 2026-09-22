@@ -38,7 +38,7 @@ export default function Sidebar({
   }
 
   return (
-    <aside className="w-72 shrink-0 bg-shell flex flex-col h-full min-h-0">
+    <aside className="w-72 shrink-0 bg-shell border-r border-paper-line flex flex-col h-full min-h-0">
       <div className="px-5 pt-6 pb-5 flex items-start justify-between">
         <div>
           <p className="font-serif text-[22px] leading-none text-ink-onshell">Ask My Docs</p>

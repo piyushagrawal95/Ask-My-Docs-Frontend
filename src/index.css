@@ -5,23 +5,42 @@
 @tailwind utilities;
 
 :root {
-  --color-paper: #F2EFE7;
-  --color-paper-card: #FDFCF8;
+  --color-shell: #16213B;
+  --color-shell-light: #203050;
+  --color-shell-line: #2C3E63;
+  --color-paper: #F6F4EE;
+  --color-paper-card: #FFFFFF;
   --color-paper-line: #E2DDCC;
   --color-ink: #1C1A15;
   --color-ink-soft: #6E6858;
-  --color-moss: #2F5D50;
-  --color-moss-soft: #DEE9E2;
+  --color-ink-onshell: #E9E6DA;
+  --color-ink-onshellsoft: #8D97B5;
+  --color-moss: #235A4B;
+  --color-moss-dark: #194337;
+  --color-moss-soft: #E1EDE7;
+  --color-brass: #B08946;
+  --color-brass-dark: #8F6E34;
+  --color-brass-soft: #F4EAD3;
 }
 
 .dark {
-  --color-paper: #16213B;
-  --color-paper-card: #203050;
-  --color-paper-line: #2C3E63;
-  --color-ink: #E9E6DA;
-  --color-ink-soft: #8D97B5;
-  --color-moss: #4A8A79;
-  --color-moss-soft: #234639;
+  /* Impressive 3-Tier Layered Dark Palette */
+  --color-shell: #090D16;          /* Deepest obsidian midnight for sidebar */
+  --color-shell-light: #131A29;    /* Elevated hover/active items in sidebar */
+  --color-shell-line: #1D263B;     /* Subtly defined line in sidebar */
+  --color-paper: #0E131F;          /* Midnight deep blue-charcoal workspace canvas */
+  --color-paper-card: #162033;     /* Elevated slate card & bubbles */
+  --color-paper-line: #24324D;     /* Distinct structural borders */
+  --color-ink: #F1F5F9;            /* High-contrast crisp white typography */
+  --color-ink-soft: #94A3B8;       /* Refined slate secondary typography */
+  --color-ink-onshell: #F1F5F9;
+  --color-ink-onshellsoft: #8E9BB0;
+  --color-moss: #10B981;           /* Vibrant emerald green */
+  --color-moss-dark: #059669;      /* Emerald hover */
+  --color-moss-soft: rgba(16, 185, 129, 0.15); /* Soft emerald badge */
+  --color-brass: #F59E0B;          /* Luminous warm amber */
+  --color-brass-dark: #D97706;
+  --color-brass-soft: rgba(245, 158, 11, 0.15);
 }
 
 * {
@@ -30,12 +49,12 @@
 
 body {
   background-color: var(--color-paper);
-  color: #1C1A15;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  color: var(--color-ink);
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 :focus-visible {
-  outline: 2px solid #2F5D50;
+  outline: 2px solid var(--color-moss);
   outline-offset: 2px;
 }
 
@@ -47,7 +66,7 @@ body {
   }
 }
 
-/* Thin, quiet scrollbars for the dark shell and the paper thread */
+/* Thin scrollbars */
 .scroll-thin::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -56,23 +75,53 @@ body {
   background: transparent;
 }
 .scroll-thin-shell::-webkit-scrollbar-thumb {
-  background-color: #2C3E63;
+  background-color: var(--color-shell-line);
   border-radius: 999px;
 }
 .scroll-thin-paper::-webkit-scrollbar-thumb {
-  background-color: #E2DDCC;
+  background-color: var(--color-paper-line);
   border-radius: 999px;
 }
 
+/* Rich, impressive Markdown Answer Styling */
+.markdown-answer {
+  color: var(--color-ink);
+  line-height: 1.65;
+}
+
 .markdown-answer p {
-  margin-bottom: 0.65rem;
+  margin-bottom: 0.75rem;
 }
 .markdown-answer p:last-child {
   margin-bottom: 0;
 }
+
+.markdown-answer h1,
+.markdown-answer h2,
+.markdown-answer h3,
+.markdown-answer h4 {
+  font-weight: 700;
+  color: var(--color-ink);
+  margin-top: 1.1rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.35;
+}
+
+.markdown-answer h1 {
+  font-size: 1.3rem;
+  border-bottom: 1px solid var(--color-paper-line);
+  padding-bottom: 0.35rem;
+}
+.markdown-answer h2 {
+  font-size: 1.15rem;
+}
+.markdown-answer h3 {
+  font-size: 1.02rem;
+}
+
 .markdown-answer ul,
 .markdown-answer ol {
-  margin: 0.4rem 0 0.65rem 1.15rem;
+  margin: 0.4rem 0 0.75rem 1.25rem;
 }
 .markdown-answer ul {
   list-style: disc;
@@ -80,18 +129,82 @@ body {
 .markdown-answer ol {
   list-style: decimal;
 }
+.markdown-answer li {
+  margin-bottom: 0.35rem;
+}
+.markdown-answer li::marker {
+  color: var(--color-moss);
+}
+
 .markdown-answer strong {
   font-weight: 600;
-  color: #1C1A15;
+  color: var(--color-ink);
 }
+
+.markdown-answer blockquote {
+  border-left: 3px solid var(--color-moss);
+  background: var(--color-moss-soft);
+  padding: 0.5rem 0.85rem;
+  margin: 0.75rem 0;
+  border-radius: 0 6px 6px 0;
+  font-style: italic;
+  color: var(--color-ink);
+}
+
 .markdown-answer code {
-  background: #EFE9D8;
-  padding: 0.1rem 0.35rem;
-  border-radius: 4px;
-  font-size: 0.85em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  background: var(--color-moss-soft);
+  color: var(--color-moss);
+  padding: 0.12rem 0.38rem;
+  border-radius: 5px;
+  font-size: 0.86em;
+  border: 1px solid var(--color-paper-line);
 }
+
+.dark .markdown-answer code {
+  color: #34D399;
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.25);
+}
+
+.markdown-answer pre {
+  background: #090D16;
+  border: 1px solid var(--color-paper-line);
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  margin: 0.85rem 0;
+  overflow-x: auto;
+}
+
+.markdown-answer pre code {
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: #F1F5F9;
+  font-size: 0.86rem;
+}
+
+.markdown-answer table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.85rem 0;
+  font-size: 0.9em;
+}
+
+.markdown-answer th,
+.markdown-answer td {
+  border: 1px solid var(--color-paper-line);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+
+.markdown-answer th {
+  background: var(--color-paper-line);
+  font-weight: 600;
+}
+
 .citation-marker {
-  color: #8F6E34;
+  color: var(--color-brass);
   font-weight: 600;
   margin-left: 1px;
   margin-right: 1px;

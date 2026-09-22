@@ -6,9 +6,9 @@ export default {
     extend: {
       colors: {
         shell: {
-          DEFAULT: "#16213B",
-          light: "#203050",
-          line: "#2C3E63",
+          DEFAULT: "var(--color-shell, #16213B)",
+          light: "var(--color-shell-light, #203050)",
+          line: "var(--color-shell-line, #2C3E63)",
         },
         paper: {
           DEFAULT: "var(--color-paper)",
@@ -18,18 +18,18 @@ export default {
         ink: {
           DEFAULT: "var(--color-ink)",
           soft: "var(--color-ink-soft)",
-          onshell: "#E9E6DA",
-          onshellsoft: "#8D97B5",
+          onshell: "var(--color-ink-onshell, #E9E6DA)",
+          onshellsoft: "var(--color-ink-onshellsoft, #8D97B5)",
         },
         moss: {
           DEFAULT: "var(--color-moss)",
-          dark: "#234639",
+          dark: "var(--color-moss-dark, #234639)",
           soft: "var(--color-moss-soft)",
         },
         brass: {
-          DEFAULT: "#B08946",
-          dark: "#8F6E34",
-          soft: "#F1E6CC",
+          DEFAULT: "var(--color-brass, #B08946)",
+          dark: "var(--color-brass-dark, #8F6E34)",
+          soft: "var(--color-brass-soft, #F1E6CC)",
         },
         rust: "#B3392E",
       },
